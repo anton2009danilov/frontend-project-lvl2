@@ -38,7 +38,7 @@ const compareFiles = (file1, file2) => {
     return undefined;
   });
 
-  const resultString = JSON.stringify(result, null, 2).replaceAll('"', '');
+  const resultString = JSON.stringify(result, null, 2).replaceAll('"', '').replaceAll(',', '');
   console.log(resultString);
 };
 
@@ -70,3 +70,5 @@ program
 program.option('-f, --format [type]', 'output format');
 
 program.parse(process.argv);
+
+export default compareFiles;
