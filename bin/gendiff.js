@@ -4,11 +4,8 @@ import { readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
 
-const program = new Command();
-
 const compareFiles = (file1, file2) => {
   const result = {};
-
   const keys1 = Object.keys(file1);
   const keys2 = Object.keys(file2);
   const allKeys = _.uniq(keys1.concat(keys2)).sort();
@@ -66,6 +63,7 @@ const actionFunction = (filepath1, filepath2) => {
 };
 
 const gendiff = () => {
+  const program = new Command();
   program
     .version('0.0.1')
     .arguments('<filepath1> <filepath2>')
