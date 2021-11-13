@@ -7,6 +7,6 @@ lint:
 test:
 	npx jest
 test-coverage:
-	npx jest --coverage --coverageProvider=v8
+	NODE_OPTIONS=--experimental-vm-modules npx jest --coverage --coverageProvider=v8
 
 .PHONY: test
