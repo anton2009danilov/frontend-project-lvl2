@@ -4,11 +4,6 @@ import { readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
 
-// node index.js file1.json file2.json
-// gendiff -h
-// gendiff /home/anton/frontend-project-lvl2/tests/file1.json /home/anton/frontend-project-lvl2/tests/file2.json
-// gendiff /home/anton/frontend-project-lvl2/tests/file1.json ./tests/file2.json
-// gendiff ./tests/file1.json ./tests/file2.json
 const program = new Command();
 
 const compareFiles = (file1, file2) => {
