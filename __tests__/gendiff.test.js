@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// import { fileURLToPath } from 'url';
+// import { dirname } from 'path';
 import action from '../bin/action';
 
 // const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +19,9 @@ const diff = `{
   + verbose: true
 }`;
 
+// eslint-disable-next-line
 test('gendiff', () => {
   console.log(path1, path2);
+  // eslint-disable-next-line
   expect(action(path1, path2)).toBe(diff);
 });
