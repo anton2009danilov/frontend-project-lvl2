@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
-import parser from './parsers.js';
+import parse from './parsers.js';
 
 const compareFiles = (file1, file2) => {
   const result = {};
@@ -55,8 +55,8 @@ const action = (filepath1, filepath2) => {
     return JSON.parse(data);
   });
 
-  const file1 = parser(fileOneString, filepath1);
-  const file2 = parser(fileTwoString, filepath2);
+  const file1 = parse(fileOneString, filepath1);
+  const file2 = parse(fileTwoString, filepath2);
 
   return compareFiles(file1, file2);
 };
