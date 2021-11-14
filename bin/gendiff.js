@@ -9,7 +9,7 @@ const gendiff = () => {
     .arguments('<filepath1> <filepath2>')
     .description('Compares two configuration files and shows a difference.')
     .helpOption('-h, --help', 'output usage information')
-    .action(action);
+    .action((path1, path2) => console.log(action(path1, path2)));
 
   program.option('-f, --format [type]', 'output format');
 
