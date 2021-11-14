@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
-import * as yaml from 'js-yaml';
+import parser from './parsers.js';
 
 const compareFiles = (file1, file2) => {
   const result = {};
@@ -55,11 +55,8 @@ const action = (filepath1, filepath2) => {
     return JSON.parse(data);
   });
 
-  const file1 = path.extname(filepath1) === 'json'
-    ? JSON.parse(fileOneString) : yaml.load(fileOneString);
-
-  const file2 = path.extname(filepath2) === 'json'
-    ? JSON.parse(fileTwoString) : yaml.load(fileTwoString);
+  const file1 = parser(fileOneString, filepath1);
+  const file2 = parser(fileTwoString, filepath2);
 
   return compareFiles(file1, file2);
 };
