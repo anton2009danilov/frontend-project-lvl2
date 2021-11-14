@@ -28,3 +28,11 @@ test('gendiff yaml test', () => {
   // eslint-disable-next-line
   expect(action(fixture1, fixture2)).toBe(result);
 });
+
+// eslint-disable-next-line
+test('gendiff yaml and json test', () => {
+  const fixture1 = getFixturePath('file1.json');
+  const fixture2 = getFixturePath('file2.yaml');
+  // eslint-disable-next-line
+  expect(action(fixture1, fixture2)).toBe(result);
+});
