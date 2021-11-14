@@ -31,7 +31,7 @@ const compareFiles = (file1, file2) => {
     return undefined;
   });
 
-  const resultString = JSON.stringify(result, null, 2).replaceAll(/"/g, '').replaceAll(/,/g, '');
+  const resultString = JSON.stringify(result, null, 2).replace(/"/g, '').replace(/,/g, '');
   console.log(resultString);
   return resultString;
 };
