@@ -10,14 +10,14 @@ import action from '../bin/action';
 const path1 = './__fixtures__/file1.json';
 const path2 = './__fixtures__/file2.json';
 
-const diff = `{
-  - follow: false
-    host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
-}`;
+// const diff = `{
+//   - follow: false
+//     host: hexlet.io
+//   - proxy: 123.234.53.22
+//   - timeout: 50
+//   + timeout: 20
+//   + verbose: true
+// }`;
 
 // eslint-disable-next-line
 test('gendiff', () => {
