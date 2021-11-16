@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
 import parse from './parsers.js';
+import stringify from './stringify.js';
 
 const compareFiles = (file1, file2) => {
   const result = {};
@@ -32,7 +33,7 @@ const compareFiles = (file1, file2) => {
     return undefined;
   });
 
-  const resultString = JSON.stringify(result, null, 2).replace(/"/g, '').replace(/,/g, '');
+  const resultString = stringify(result, ' ', 2).replace(/"/g, '').replace(/,/g, '');
   return resultString;
 };
 
