@@ -4,14 +4,74 @@ import * as path from 'path';
 import parse from './parsers.js';
 import stringify from './stringify.js';
 
+const format = (data) => {
+  // console.log(JSON.stringify(data, null, 2));
+  const result = {};
+  const replacer = ' ';
+  if (data === undefined) {
+    return null;
+  }
+
+  Object.entries(data).forEach(([key, item]) => {
+    // console.log(key, item.value);
+
+    // if (item.type === 'tree') {
+    //   result[`${replacer.repeat(2)}${key}`] = format(item);
+    // }
+
+    if (item.type === 'tree' && !item.sign) {
+      result[`${replacer.repeat(2)}${key}`] = format(item);
+    }
+
+    if (item.type === 'tree' && item.sign === '=') {
+      result[`${replacer.repeat(2)}${key}`] = format(item);
+    }
+
+    if (item.type === 'tree' && item.sign === '-') {
+      result[`-${replacer}${key}`] = format(item);
+    }
+
+    if (item.type === 'tree' && item.sign === '+') {
+      // console.log('______');
+      // console.log(format({ key: item.value }));
+      // console.log(key, item);
+      // console.log(Object.entries(item.value));
+      // console.log('______');
+      result[`+${replacer}${key}`] = format(item.value);
+    }
+
+    if (item.type === 'list') {
+      result[`-${replacer}${key}`] = item.before.value;
+      result[`+${replacer}${key}`] = item.after.value;
+    }
+
+    if (item.type === 'item' && !item.sign) {
+      result[`${replacer.repeat(2)}${key}`] = item.value;
+    }
+
+    if (item.type === 'item' && item.sign === '=') {
+      result[`${replacer.repeat(2)}${key}`] = item.value;
+    }
+
+    if (item.type === 'item' && item.sign === '-') {
+      result[`-${replacer}${key}`] = item.value;
+    }
+
+    if (item.type === 'item' && item.sign === '+') {
+      result[`+${replacer}${key}`] = item.value;
+    }
+  });
+
+  // console.log(JSON.stringify(result, null, 2));
+  return result;
+};
+
 const buildTree = (data) => {
   const tree = {};
-  console.log(data);
   if (data === null) {
     return data;
   }
 
-  console.log(Object.entries(data));
   Object.entries(data).map(([itemName, itemValue]) => {
     const type = typeof itemValue === 'object' ? 'tree' : 'item';
     const value = typeof itemValue === 'object' ? buildTree(itemValue) : itemValue;
@@ -42,7 +102,9 @@ const compareAll = (data1, data2) => {
     }
 
     if (node1.type === 'tree' && node2.type === 'tree') {
-      return compareAll(node1.value, node2.value);
+      result = compareAll(node1.value, node2.value);
+      result.type = 'tree';
+      return result;
     }
 
     result.type = 'list';
@@ -69,7 +131,6 @@ const compareAll = (data1, data2) => {
   const keys1 = Object.keys(data1);
   const keys2 = Object.keys(data2);
   const allKeys = _.uniq(keys1.concat(keys2)).sort();
-  console.log(allKeys);
   const commonKeys = _.intersection(keys1, keys2);
   const uniqueKeys1 = _.difference(keys1, keys2);
   const uniqueKeys2 = _.difference(keys2, keys1);
@@ -91,7 +152,6 @@ const compareAll = (data1, data2) => {
     }
   });
 
-  console.log(`####result:   ${JSON.stringify(result, null, 2)}`);
   return result;
 };
 
@@ -119,7 +179,31 @@ const action = (filepath1, filepath2) => {
 
   const tree1 = buildTree(file1);
   const tree2 = buildTree(file2);
-  compareAll(tree1, tree2);
+  const result = compareAll(tree1, tree2);
+
+  // console.log('***********************************');
+  // console.log(result);
+  // console.log('***********************************');
+  const formattedResult = format(result);
+  // console.log(JSON.stringify(result, null, 2));
+  // console.log(stringify(formattedResult, ' ', 2));
+  const test = {
+    setting5: {
+      value: {
+        key5: {
+          value: 'value5',
+          type: 'item',
+        },
+      },
+      type: 'tree',
+      sign: '+',
+    },
+  };
+  // console.log('!!!!!!!!!!!!!test!!!');
+  // console.log(format(test));
+  // console.log('!!!!!!!!!!!!!test!!!');
+
+  return stringify(formattedResult, ' ', 2);
   // return stringify(compareAll(tree1, tree2), ' ', 2).replace(/"/g, '').replace(/,/g, '');
 };
 

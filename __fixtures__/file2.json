@@ -1,4 +1,5 @@
 {
+  "obj": {"1": { "a": 1111, "b": 3333}},
   "timeout": 20,
   "verbose": true,
   "host": "hexlet.io"
