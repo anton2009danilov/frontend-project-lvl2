@@ -4,37 +4,87 @@ import * as path from 'path';
 import parse from './parsers.js';
 import stringify from './stringify.js';
 
-const compareFiles = (file1, file2) => {
-  const result = {};
-  const keys1 = Object.keys(file1);
-  const keys2 = Object.keys(file2);
-  const allKeys = _.uniq(keys1.concat(keys2)).sort();
-  const commonKeys = _.intersection(keys1, keys2);
-  const uniqueKeys1 = _.difference(keys1, keys2);
-  const uniqueKeys2 = _.difference(keys2, keys1);
+const buildTree = (data) => {
+  // console.log(Object.entries(data));
+  const tree = {};
 
-  allKeys.map((key) => {
-    if (commonKeys.includes(key)) {
-      if (file1[key] === file2[key]) {
-        result[`  ${key}`] = file1[key];
-      } else {
-        result[`- ${key}`] = file1[key];
-        result[`+ ${key}`] = file2[key];
-      }
-    }
+  Object.entries(data).map(([itemName, itemValue]) => {
+    const type = typeof itemValue === 'object' ? 'tree' : 'item';
+    const value = typeof itemValue === 'object' ? buildTree(itemValue) : itemValue;
 
-    if (uniqueKeys1.includes(key)) {
-      result[`- ${key}`] = file1[key];
-    }
-    if (uniqueKeys2.includes(key)) {
-      result[`+ ${key}`] = file2[key];
-    }
+    tree[itemName] = {
+      value,
+      type,
+    };
 
     return undefined;
   });
 
-  const resultString = stringify(result, ' ', 2).replace(/"/g, '').replace(/,/g, '');
-  return resultString;
+  // console.log(data);
+  // console.log(JSON.stringify(tree, null, 2));
+  return tree;
+};
+
+const compareAll = (data1, data2) => {
+  const compareCommon = (key, node1, node2) => {
+    let result = {};
+
+    if (_.isEqual(node1, node2)) {
+      if (node1.type === 'tree') {
+        result = _.cloneDeep(node1);
+      } else {
+        result = node1;
+      }
+      result.sign = '=';
+      return result;
+    }
+
+    if (node1.type === 'tree' && node2.type === 'tree') {
+      // console.log(node1);
+      // console.log(node2);
+      return compareAll(node1.value, node2.value);
+    }
+
+    result.type = 'list';
+    result[`file1__${key}`] = typeof node1 === 'object' ? _.cloneDeep(node1) : node1;
+    result[`file2__${key}`] = typeof node2 === 'object' ? _.cloneDeep(node2) : node2;
+    result[`file1__${key}`].sign = '-';
+    result[`file2__${key}`].sign = '+';
+    return result;
+  };
+
+const compareUnique = (key, node, sign) => {
+
+};
+
+  const result = {};
+  const keys1 = Object.keys(data1);
+  const keys2 = Object.keys(data2);
+  const allKeys = _.uniq(keys1.concat(keys2)).sort();
+  console.log(allKeys);
+  const commonKeys = _.intersection(keys1, keys2);
+  const uniqueKeys1 = _.difference(keys1, keys2);
+  const uniqueKeys2 = _.difference(keys2, keys1);
+
+  allKeys.forEach((key) => {
+    const itemOfTree1 = data1[key];
+    const itemOfTree2 = data2[key];
+
+    if (commonKeys.includes(key)) {
+      result[key] = compareCommon(key, itemOfTree1, itemOfTree2);
+    }
+
+    if (uniqueKeys1.includes(key)) {
+      result[key] = compareUnique(key, itemOfTree1, '-');
+    }
+
+    if (uniqueKeys2.includes(key)) {
+      result[key] = compareUnique(key, itemOfTree2, '+');
+    }
+  });
+
+  console.log(`####result:   ${JSON.stringify(result, null, 2)}`);
+  return result;
 };
 
 const action = (filepath1, filepath2) => {
@@ -59,7 +109,10 @@ const action = (filepath1, filepath2) => {
   const file1 = parse(fileOneString, filepath1);
   const file2 = parse(fileTwoString, filepath2);
 
-  return compareFiles(file1, file2);
+  const tree1 = buildTree(file1);
+  const tree2 = buildTree(file2);
+  compareAll(tree1, tree2);
+  // return stringify(compareFiles(file1, file2), ' ', 2).replace(/"/g, '').replace(/,/g, '');
 };
 
 export default action;
