@@ -8,17 +8,11 @@ const format = (data) => {
   // console.log(JSON.stringify(data, null, 2));
   const result = {};
   const replacer = ' ';
-  if (data === undefined) {
+  if (!data) {
     return null;
   }
 
   Object.entries(data).forEach(([key, item]) => {
-    // console.log(key, item.value);
-
-    // if (item.type === 'tree') {
-    //   result[`${replacer.repeat(2)}${key}`] = format(item);
-    // }
-
     if (item.type === 'tree' && !item.sign) {
       result[`${replacer.repeat(2)}${key}`] = format(item);
     }
@@ -32,17 +26,14 @@ const format = (data) => {
     }
 
     if (item.type === 'tree' && item.sign === '+') {
-      // console.log('______');
-      // console.log(format({ key: item.value }));
-      // console.log(key, item);
-      // console.log(Object.entries(item.value));
-      // console.log('______');
       result[`+${replacer}${key}`] = format(item.value);
     }
 
     if (item.type === 'list') {
-      result[`-${replacer}${key}`] = item.before.value;
-      result[`+${replacer}${key}`] = item.after.value;
+      // result[`-${replacer}${key}`] = item.before.value;
+      console.log(key, item);
+      result[`-${replacer}${key}`] = item.before.type === 'tree' ? format(item.before.value) : item.before.value;
+      result[`+${replacer}${key}`] = item.after.type === 'tree' ? format(item.after.value) : item.after.value;
     }
 
     if (item.type === 'item' && !item.sign) {
@@ -182,26 +173,55 @@ const action = (filepath1, filepath2) => {
   const result = compareAll(tree1, tree2);
 
   // console.log('***********************************');
-  // console.log(result);
+  // console.log(JSON.stringify(result, null, 2));
   // console.log('***********************************');
   const formattedResult = format(result);
   // console.log(JSON.stringify(result, null, 2));
   // console.log(stringify(formattedResult, ' ', 2));
   const test = {
-    setting5: {
-      value: {
-        key5: {
-          value: 'value5',
+    group1: {
+      baz: {
+        type: 'list',
+        before: {
+          value: 'bas',
           type: 'item',
+          sign: '-',
+        },
+        after: {
+          value: 'bars',
+          type: 'item',
+          sign: '+',
+        },
+      },
+      foo: {
+        value: 'bar',
+        type: 'item',
+        sign: '=',
+      },
+      nest: {
+        type: 'list',
+        before: {
+          value: {
+            key: {
+              value: 'value',
+              type: 'item',
+            },
+          },
+          type: 'tree',
+          sign: '-',
+        },
+        after: {
+          value: 'str',
+          type: 'item',
+          sign: '+',
         },
       },
       type: 'tree',
-      sign: '+',
     },
   };
-  // console.log('!!!!!!!!!!!!!test!!!');
-  // console.log(format(test));
-  // console.log('!!!!!!!!!!!!!test!!!');
+  console.log('!!!!!!!!!!!!!test!!!');
+  console.log(JSON.stringify(format(test), null, 2));
+  console.log('!!!!!!!!!!!!!test!!!');
 
   return stringify(formattedResult, ' ', 2);
   // return stringify(compareAll(tree1, tree2), ' ', 2).replace(/"/g, '').replace(/,/g, '');
