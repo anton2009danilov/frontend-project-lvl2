@@ -5,7 +5,6 @@ import parse from './parsers.js';
 import stringify from './stringify.js';
 
 const format = (data) => {
-  // console.log(JSON.stringify(data, null, 2));
   const result = {};
   const replacer = ' ';
   if (!data) {
@@ -15,23 +14,25 @@ const format = (data) => {
   Object.entries(data).forEach(([key, item]) => {
     if (item.type === 'tree' && !item.sign) {
       result[`${replacer.repeat(2)}${key}`] = format(item);
+
+      if (item.value) {
+        if (item.value.type === 'tree') {
+          result[`${replacer.repeat(2)}${key}`] = format(item);
+        }
+
+        if (item.value.type === 'item') {
+          result[`${replacer.repeat(2)}${key}`] = format(item.value);
+        } else {
+          result[`${replacer.repeat(2)}${key}`] = format(item.value);
+        }
+      }
     }
 
-    if (item.type === 'tree' && item.sign === '=') {
-      result[`${replacer.repeat(2)}${key}`] = format(item);
-    }
-
-    if (item.type === 'tree' && item.sign === '-') {
-      result[`-${replacer}${key}`] = format(item);
-    }
-
-    if (item.type === 'tree' && item.sign === '+') {
-      result[`+${replacer}${key}`] = format(item.value);
+    if (item.type === 'tree' && item.sign) {
+      result[`${item.sign}${replacer}${key}`] = format(item.value);
     }
 
     if (item.type === 'list') {
-      // result[`-${replacer}${key}`] = item.before.value;
-      console.log(key, item);
       result[`-${replacer}${key}`] = item.before.type === 'tree' ? format(item.before.value) : item.before.value;
       result[`+${replacer}${key}`] = item.after.type === 'tree' ? format(item.after.value) : item.after.value;
     }
@@ -40,20 +41,11 @@ const format = (data) => {
       result[`${replacer.repeat(2)}${key}`] = item.value;
     }
 
-    if (item.type === 'item' && item.sign === '=') {
-      result[`${replacer.repeat(2)}${key}`] = item.value;
-    }
-
-    if (item.type === 'item' && item.sign === '-') {
-      result[`-${replacer}${key}`] = item.value;
-    }
-
-    if (item.type === 'item' && item.sign === '+') {
-      result[`+${replacer}${key}`] = item.value;
+    if (item.type === 'item' && item.sign) {
+      result[`${item.sign}${replacer}${key}`] = item.value;
     }
   });
 
-  // console.log(JSON.stringify(result, null, 2));
   return result;
 };
 
@@ -88,7 +80,6 @@ const compareAll = (data1, data2) => {
       } else {
         result = node1;
       }
-      result.sign = '=';
       return result;
     }
 
@@ -171,60 +162,9 @@ const action = (filepath1, filepath2) => {
   const tree1 = buildTree(file1);
   const tree2 = buildTree(file2);
   const result = compareAll(tree1, tree2);
-
-  // console.log('***********************************');
-  // console.log(JSON.stringify(result, null, 2));
-  // console.log('***********************************');
   const formattedResult = format(result);
-  // console.log(JSON.stringify(result, null, 2));
-  // console.log(stringify(formattedResult, ' ', 2));
-  const test = {
-    group1: {
-      baz: {
-        type: 'list',
-        before: {
-          value: 'bas',
-          type: 'item',
-          sign: '-',
-        },
-        after: {
-          value: 'bars',
-          type: 'item',
-          sign: '+',
-        },
-      },
-      foo: {
-        value: 'bar',
-        type: 'item',
-        sign: '=',
-      },
-      nest: {
-        type: 'list',
-        before: {
-          value: {
-            key: {
-              value: 'value',
-              type: 'item',
-            },
-          },
-          type: 'tree',
-          sign: '-',
-        },
-        after: {
-          value: 'str',
-          type: 'item',
-          sign: '+',
-        },
-      },
-      type: 'tree',
-    },
-  };
-  console.log('!!!!!!!!!!!!!test!!!');
-  console.log(JSON.stringify(format(test), null, 2));
-  console.log('!!!!!!!!!!!!!test!!!');
 
   return stringify(formattedResult, ' ', 2);
-  // return stringify(compareAll(tree1, tree2), ' ', 2).replace(/"/g, '').replace(/,/g, '');
 };
 
 export default action;
