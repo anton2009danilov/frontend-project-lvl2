@@ -4,7 +4,10 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
   const iter = (currentData, depth) => {
     if (isObject(currentData)) {
       const replacerStr = replacer.repeat(replacersCount * depth);
-      const parenReplacerStr = replacer.repeat(replacersCount * (depth - 1));
+      const parenReplacerStr = depth !== 1
+        ? replacer.repeat(replacersCount * (depth))
+        : replacer.repeat(replacersCount * (depth - 1));
+
       let str = '';
       const openParen = '{';
       const closeParen = `${parenReplacerStr}}`;
