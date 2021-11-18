@@ -1,53 +1,11 @@
-import { readFileSync } from 'fs';
 import _ from 'lodash';
+import { readFileSync } from 'fs';
 import * as path from 'path';
 import parse from './parsers.js';
+import stylish from './stylish.js';
 import stringify from './stringify.js';
 
-const format = (data) => {
-  const result = {};
-  const replacer = ' ';
-  if (!data) {
-    return null;
-  }
-
-  Object.entries(data).forEach(([key, item]) => {
-    if (item.type === 'tree' && !item.sign) {
-      result[`${replacer.repeat(2)}${key}`] = format(item);
-
-      if (item.value) {
-        if (item.value.type === 'tree') {
-          result[`${replacer.repeat(2)}${key}`] = format(item);
-        }
-
-        if (item.value.type === 'item') {
-          result[`${replacer.repeat(2)}${key}`] = format(item.value);
-        } else {
-          result[`${replacer.repeat(2)}${key}`] = format(item.value);
-        }
-      }
-    }
-
-    if (item.type === 'tree' && item.sign) {
-      result[`${item.sign}${replacer}${key}`] = format(item.value);
-    }
-
-    if (item.type === 'list') {
-      result[`-${replacer}${key}`] = item.before.type === 'tree' ? format(item.before.value) : item.before.value;
-      result[`+${replacer}${key}`] = item.after.type === 'tree' ? format(item.after.value) : item.after.value;
-    }
-
-    if (item.type === 'item' && !item.sign) {
-      result[`${replacer.repeat(2)}${key}`] = item.value;
-    }
-
-    if (item.type === 'item' && item.sign) {
-      result[`${item.sign}${replacer}${key}`] = item.value;
-    }
-  });
-
-  return result;
-};
+const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 
 const buildTree = (data) => {
   const tree = {};
@@ -56,8 +14,8 @@ const buildTree = (data) => {
   }
 
   Object.entries(data).map(([itemName, itemValue]) => {
-    const type = typeof itemValue === 'object' ? 'tree' : 'item';
-    const value = typeof itemValue === 'object' ? buildTree(itemValue) : itemValue;
+    const type = isObject(itemValue) ? 'tree' : 'item';
+    const value = isObject(itemValue) ? buildTree(itemValue) : itemValue;
 
     tree[itemName] = {
       value,
@@ -90,8 +48,8 @@ const compareAll = (data1, data2) => {
     }
 
     result.type = 'list';
-    result.before = typeof node1 === 'object' ? _.cloneDeep(node1) : node1;
-    result.after = typeof node2 === 'object' ? _.cloneDeep(node2) : node2;
+    result.before = isObject(node1) ? _.cloneDeep(node1) : node1;
+    result.after = isObject(node2) ? _.cloneDeep(node2) : node2;
     result.before.sign = '-';
     result.after.sign = '+';
     return result;
@@ -137,7 +95,7 @@ const compareAll = (data1, data2) => {
   return result;
 };
 
-const action = (filepath1, filepath2) => {
+const action = (filepath1, filepath2, formatter = 'stylish') => {
   const absPathOfFile1 = path.isAbsolute(filepath1)
     ? filepath1
     : path.resolve(process.cwd(), filepath1);
@@ -161,8 +119,11 @@ const action = (filepath1, filepath2) => {
 
   const tree1 = buildTree(file1);
   const tree2 = buildTree(file2);
-  const result = compareAll(tree1, tree2);
-  const formattedResult = format(result);
+
+  let formattedResult;
+  if (formatter === 'stylish') {
+    formattedResult = stylish(compareAll(tree1, tree2));
+  }
 
   return stringify(formattedResult, ' ', 2);
 };
