@@ -2,8 +2,7 @@ import _ from 'lodash';
 import { readFileSync } from 'fs';
 import * as path from 'path';
 import parse from './parsers.js';
-import stylish from './stylish.js';
-import stringify from './stringify.js';
+import stylish from '../formatters/stylish.js';
 
 const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 
@@ -125,7 +124,7 @@ const action = (filepath1, filepath2, formatter = 'stylish') => {
     formattedResult = stylish(compareAll(tree1, tree2));
   }
 
-  return stringify(formattedResult, ' ', 2);
+  return formattedResult;
 };
 
 export default action;
