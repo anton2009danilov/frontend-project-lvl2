@@ -20,7 +20,7 @@ const plainResult = readFileSync(stylishResultPath, 'utf-8', (err, data) => {
 });
 
 // eslint-disable-next-line
-test('gendiff', () => {
+test('gendiff stylish json', () => {
   const fixture1 = getFixturePath('file1.json');
   const fixture2 = getFixturePath('file2.json');
   // eslint-disable-next-line
@@ -28,7 +28,7 @@ test('gendiff', () => {
 });
 
 // eslint-disable-next-line
-test('gendiff yaml test', () => {
+test('gendiff stylish yaml', () => {
   const fixture1 = getFixturePath('file1.yaml');
   const fixture2 = getFixturePath('file2.yaml');
   // eslint-disable-next-line
@@ -36,7 +36,7 @@ test('gendiff yaml test', () => {
 });
 
 // eslint-disable-next-line
-test('gendiff yaml and json test', () => {
+test('gendiff stylish yaml and json', () => {
   const fixture1 = getFixturePath('file1.json');
   const fixture2 = getFixturePath('file2.yaml');
   // eslint-disable-next-line
@@ -44,7 +44,7 @@ test('gendiff yaml and json test', () => {
 });
 
 // eslint-disable-next-line
-test('gendiff stylish json test', () => {
+test('gendiff plain json', () => {
   const fixture1 = getFixturePath('file1.json');
   const fixture2 = getFixturePath('file2.json');
   // eslint-disable-next-line
