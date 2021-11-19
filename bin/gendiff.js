@@ -7,7 +7,7 @@ const gendiff = () => {
   const options = program.opts();
   const formatOption = new Option('-f, --format [type]', 'output format')
     .default('stylish')
-    .choices(['stylish', 'plain']);
+    .choices(['stylish', 'plain', 'json']);
 
   program
     .version('0.0.1')

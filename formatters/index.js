@@ -6,5 +6,8 @@ export default (data, formatterType) => {
     return plain(data);
   }
 
+  if (formatterType === 'json') {
+    return JSON.stringify(data);
+  }
   return stylish(data);
 };
