@@ -42,7 +42,9 @@ const format = (data) => {
     }
   });
 
-  return stringify(result, ' ', 2);
+  return result;
 };
 
-export default format;
+const stylish = (data) => stringify(format(data), ' ', 2);
+
+export default stylish;
