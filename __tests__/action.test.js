@@ -14,7 +14,7 @@ const stylishResult = readFileSync(stylishResultPath, 'utf-8', (err, data) => {
   return JSON.parse(data);
 });
 
-const plainResult = readFileSync(stylishResultPath, 'utf-8', (err, data) => {
+const plainResult = readFileSync(plainResultPath, 'utf-8', (err, data) => {
   if (err) throw err;
   return JSON.parse(data);
 });
