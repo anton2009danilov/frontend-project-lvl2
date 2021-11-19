@@ -62,5 +62,5 @@ test('gendiff -f json file1.json file2.json', () => {
   const fixture1 = getFixturePath('file1.json');
   const fixture2 = getFixturePath('file2.json');
   // eslint-disable-next-line
-  expect(action(fixture1, fixture2, 'plain')).toBe(jsonResult);
+  expect(action(fixture1, fixture2, 'json')).toBe(jsonResult);
 });
