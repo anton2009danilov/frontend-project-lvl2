@@ -10,4 +10,4 @@
 [![Node CI](https://github.com/anton2009danilov/frontend-project-lvl2/actions/workflows/nodejs.yml/badge.svg)](https://github.com/anton2009danilov/frontend-project-lvl2/actions/workflows/nodejs.yml)
 
 ### Asciinema demo
-[![asciicast](https://asciinema.org/a/W7XbzE9yBtwOQuxsH09bsYW6o.svg)](https://asciinema.org/a/W7XbzE9yBtwOQuxsH09bsYW6o)
+[![asciicast](https://asciinema.org/a/6SWm09QBhcnKomBAY8SMi8rD9.svg)](https://asciinema.org/a/6SWm09QBhcnKomBAY8SMi8rD9)
