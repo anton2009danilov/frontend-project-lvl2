@@ -87,6 +87,6 @@ const format = (data) => {
   return result;
 };
 
-const stylish = (data) => `${stringify(format(data), ' ', 2)}\n`;
+const stylish = (data) => stringify(format(data), ' ', 2);
 
 export default stylish;
