@@ -75,6 +75,6 @@ const format = (data) => {
   return formattedResult;
 };
 
-const plain = (data) => stringify(format(data));
+const plain = (data) => stringify(format(data)).replace(/\n$/, '');
 
 export default plain;
