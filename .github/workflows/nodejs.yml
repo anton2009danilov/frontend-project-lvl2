@@ -30,9 +30,6 @@ jobs:
         env:
           CI: true
       
-      - name : npm link
-        run: make link
-
       - name: run linter
         run: make lint
       
