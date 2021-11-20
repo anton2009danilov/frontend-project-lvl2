@@ -34,20 +34,20 @@ const stringify = (data, str = '', parentKey = '') => {
 const format = (data) => {
   const formattedResult = {};
   Object.entries(data).forEach(([key, item]) => {
-    if (key === 'type') return;
+    if (key === 'nodeFormat') return;
 
     let result = {};
 
-    if (item.type === 'tree' && !item.sign) {
+    if (item.nodeFormat === 'tree' && !item.sign) {
       if (item.value) {
-        if (item.value.type === 'tree') {
+        if (item.value.nodeFormat === 'tree') {
           result.child = format(item);
         }
       }
       result = format(item);
     }
 
-    if (item.type === 'tree' && item.sign) {
+    if (item.nodeFormat === 'tree' && item.sign) {
       result.status = item.sign === '+' ? 'added' : 'removed';
 
       if (item.sign === '+') {
@@ -55,7 +55,7 @@ const format = (data) => {
       }
     }
 
-    if (item.type === 'item' && item.sign) {
+    if (item.nodeFormat === 'item' && item.sign) {
       result.status = item.sign === '+' ? 'added' : 'removed';
 
       if (item.sign === '+') {
@@ -63,7 +63,7 @@ const format = (data) => {
       }
     }
 
-    if (item.type === 'list') {
+    if (item.nodeFormat === 'list') {
       result.status = 'updated';
       result.before = getSimpleValue(item.before);
       result.after = getSimpleValue(item.after);
@@ -75,6 +75,6 @@ const format = (data) => {
   return formattedResult;
 };
 
-const plain = (data) => stringify(format(data)).replace(/\n$/, '');
+const plain = (data) => stringify(format(data));
 
 export default plain;

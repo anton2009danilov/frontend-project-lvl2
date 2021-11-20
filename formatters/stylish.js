@@ -50,15 +50,15 @@ const format = (data) => {
   }
 
   Object.entries(data).forEach(([key, item]) => {
-    if (item.type === 'tree' && !item.sign) {
+    if (item.nodeFormat === 'tree' && !item.sign) {
       result[`${replacer.repeat(2)}${key}`] = format(item);
 
       if (item.value) {
-        if (item.value.type === 'tree') {
+        if (item.value.nodeFormat === 'tree') {
           result[`${replacer.repeat(2)}${key}`] = format(item);
         }
 
-        if (item.value.type === 'item') {
+        if (item.value.nodeFormat === 'item') {
           result[`${replacer.repeat(2)}${key}`] = format(item.value);
         } else {
           result[`${replacer.repeat(2)}${key}`] = format(item.value);
@@ -66,20 +66,20 @@ const format = (data) => {
       }
     }
 
-    if (item.type === 'tree' && item.sign) {
+    if (item.nodeFormat === 'tree' && item.sign) {
       result[`${item.sign}${replacer}${key}`] = format(item.value);
     }
 
-    if (item.type === 'list') {
-      result[`-${replacer}${key}`] = item.before.type === 'tree' ? format(item.before.value) : item.before.value;
-      result[`+${replacer}${key}`] = item.after.type === 'tree' ? format(item.after.value) : item.after.value;
+    if (item.nodeFormat === 'list') {
+      result[`-${replacer}${key}`] = item.before.nodeFormat === 'tree' ? format(item.before.value) : item.before.value;
+      result[`+${replacer}${key}`] = item.after.nodeFormat === 'tree' ? format(item.after.value) : item.after.value;
     }
 
-    if (item.type === 'item' && !item.sign) {
+    if (item.nodeFormat === 'item' && !item.sign) {
       result[`${replacer.repeat(2)}${key}`] = item.value;
     }
 
-    if (item.type === 'item' && item.sign) {
+    if (item.nodeFormat === 'item' && item.sign) {
       result[`${item.sign}${replacer}${key}`] = item.value;
     }
   });
@@ -87,6 +87,6 @@ const format = (data) => {
   return result;
 };
 
-const stylish = (data) => stringify(format(data), ' ', 2);
+const stylish = (data) => `${stringify(format(data), ' ', 2)}\n`;
 
 export default stylish;
