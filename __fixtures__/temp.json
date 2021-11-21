@@ -1,0 +1,199 @@
+{
+  "common": {
+    "follow": {
+      "value": false,
+      "type": "added"
+    },
+    "setting1": {
+      "name": "setting1",
+      "value": "Value 1"
+    },
+    "setting2": {
+      "value": 200,
+      "type": "removed"
+    },
+    "setting3": {
+      "before": {
+        "value": true
+      },
+      "after": {
+        "children": [
+          {
+            "name": "key",
+            "value": "value"
+          }
+        ]
+      },
+      "type": "updated"
+    },
+    "setting4": {
+      "value": "blah blah",
+      "type": "added"
+    },
+    "setting5": {
+      "children": [
+        {
+          "name": "key5",
+          "value": "value5"
+        }
+      ],
+      "type": "added"
+    },
+    "setting6": {
+      "doge": {
+        "wow": {
+          "before": {
+            "value": "too much"
+          },
+          "after": {
+            "value": "so much"
+          },
+          "type": "updated"
+        }
+      },
+      "key": {
+        "name": "key",
+        "value": "value"
+      },
+      "ops": {
+        "value": "vops",
+        "type": "added"
+      }
+    }
+  },
+  "group1": {
+    "baz": {
+      "before": {
+        "value": "bas"
+      },
+      "after": {
+        "value": "bars"
+      },
+      "type": "updated"
+    },
+    "foo": {
+      "name": "foo",
+      "value": "bar"
+    },
+    "nest": {
+      "before": {
+        "children": [
+          {
+            "name": "key",
+            "value": "value"
+          }
+        ]
+      },
+      "after": {
+        "value": "str"
+      },
+      "type": "updated"
+    }
+  },
+  "group2": {
+    "children": [
+      {
+        "name": "abc",
+        "value": 12345
+      },
+      {
+        "name": "deep",
+        "children": [
+          {
+            "name": "id",
+            "value": 45
+          }
+        ]
+      }
+    ],
+    "type": "removed"
+  },
+  "group3": {
+    "children": [
+      {
+        "name": "deep",
+        "children": [
+          {
+            "name": "id",
+            "children": [
+              {
+                "name": "number",
+                "value": 45
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "fee",
+        "value": 100500
+      }
+    ],
+    "type": "added"
+  },
+  "group4": {
+    "default": {
+      "before": {
+        "value": null
+      },
+      "after": {
+        "value": ""
+      },
+      "type": "updated"
+    },
+    "foo": {
+      "before": {
+        "value": 0
+      },
+      "after": {
+        "value": null
+      },
+      "type": "updated"
+    },
+    "isNested": {
+      "before": {
+        "value": false
+      },
+      "after": {
+        "value": "none"
+      },
+      "type": "updated"
+    },
+    "key": {
+      "value": false,
+      "type": "added"
+    },
+    "nest": {
+      "bar": {
+        "before": {
+          "value": ""
+        },
+        "after": {
+          "value": 0
+        },
+        "type": "updated"
+      },
+      "isNested": {
+        "value": true,
+        "type": "removed"
+      }
+    },
+    "someKey": {
+      "value": true,
+      "type": "added"
+    },
+    "type": {
+      "before": {
+        "value": "bas"
+      },
+      "after": {
+        "value": "bar"
+      },
+      "type": "updated"
+    }
+  },
+  "test": {
+    "name": "test",
+    "value": 1
+  }
+}

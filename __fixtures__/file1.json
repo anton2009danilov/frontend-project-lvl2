@@ -1,4 +1,12 @@
 {
+  "test": 1,
+  "test2": 444,
+  "test3": 88888888,
+  "test5": 5,
+  "test6": {
+    "AAA": "AAAAAAAAAAA",
+    "BBB": "BBBBBBBBBBB"
+  },
   "common": {
     "setting1": "Value 1",
     "setting2": 200,
