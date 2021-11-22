@@ -13,7 +13,7 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
 
       const closeParen = `${parenReplacerStr}}`;
 
-      const result = Object.entries(currentData).reduce((str, [key, value])=> {
+      const result = Object.entries(currentData).reduce((str, [key, value]) => {
         if (isObject(value)) {
           const newKey = iter(key, depth + 1);
           const newValue = iter(value, depth + 1);
