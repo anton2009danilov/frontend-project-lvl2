@@ -1,80 +1,39 @@
-const isObject = (data) => Object.prototype.toString.call(data) === '[object Object]';
-const getSimpleValue = (item) => (isObject(item.value) ? '[complex value]' : item.value);
+const isArray = (obj) => Object.prototype.toString.call(obj) === '[object Array]';
+const getSimpleValue = (value) => (typeof value === 'object' ? '[complex value]' : value);
 
-const prepareForDisplay = (value) => (typeof value === 'string' && value !== '[complex value]'
-  ? `'${value}'`
-  : value);
+const prepareForDisplay = (value) => {
+  if (isArray(value)) {
+    return '[complex value]';
+  }
 
-const stringify = (data, str = '', parentKey = '') => {
-  let result = str;
-
-  Object.entries(data).forEach(([key, item]) => {
-    const currentKey = parentKey ? `${parentKey}.${key}` : key;
-
-    if (!item.status) {
-      result = stringify(item, result, currentKey);
-    }
-
-    if (item.status === 'added') {
-      result += `Property '${currentKey}' was ${item.status} with value: ${prepareForDisplay(item.value)}\n`;
-    }
-
-    if (item.status === 'removed') {
-      result += `Property '${currentKey}' was ${item.status}\n`;
-    }
-
-    if (item.status === 'updated') {
-      result += `Property '${currentKey}' was ${item.status}. From ${prepareForDisplay(item.before)} to ${prepareForDisplay(item.after)}\n`;
-    }
-  });
-
-  return result;
+  if (typeof value === 'string' && value !== '[complex value]') {
+    return `'${value}'`;
+  }
+  return value;
 };
 
-const format = (data) => {
-  const formattedResult = {};
-  Object.entries(data).forEach(([key, item]) => {
-    if (key === 'nodeFormat') return;
+const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, item) => {
+  const {
+    name, type, value, children, before, after,
+  } = item;
+  const currentValue = value === undefined ? getSimpleValue(children) : value;
+  const currentKey = parentKey ? `${parentKey}.${name}` : name;
 
-    let result = {};
+  if (type === 'added') {
+    return `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+  }
 
-    if (item.nodeFormat === 'tree' && !item.sign) {
-      if (item.value) {
-        if (item.value.nodeFormat === 'tree') {
-          result.child = format(item);
-        }
-      }
-      result = format(item);
-    }
+  if (type === 'removed') {
+    return `${resultStr}Property '${currentKey}' was ${type}\n`;
+  }
 
-    if (item.nodeFormat === 'tree' && item.sign) {
-      result.status = item.sign === '+' ? 'added' : 'removed';
+  if (type === 'updated') {
+    return `${resultStr}Property '${currentKey}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
+  }
 
-      if (item.sign === '+') {
-        result.value = getSimpleValue(item);
-      }
-    }
+  return children !== undefined ? stringify(children, resultStr, currentKey) : resultStr;
+}, str);
 
-    if (item.nodeFormat === 'item' && item.sign) {
-      result.status = item.sign === '+' ? 'added' : 'removed';
-
-      if (item.sign === '+') {
-        result.value = item.value;
-      }
-    }
-
-    if (item.nodeFormat === 'list') {
-      result.status = 'updated';
-      result.before = getSimpleValue(item.before);
-      result.after = getSimpleValue(item.after);
-    }
-
-    formattedResult[key] = result;
-  });
-
-  return formattedResult;
-};
-
-const plain = (data) => stringify(format(data)).replace(/\n$/, '');
+const plain = (data) => stringify(data).replace(/\n$/, '');
 
 export default plain;
