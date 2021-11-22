@@ -11,27 +11,21 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
         ? replacer.repeat(replacersCount * (depth - 1))
         : replacer.repeat(replacersCount * depth + 2 * (depth - 2));
 
-      let str = '';
-      const openParen = '{';
       const closeParen = `${parenReplacerStr}}`;
 
-      Object.entries(currentData).map(([key, value]) => {
-        let newKey;
-        let newValue;
-
+      const result = Object.entries(currentData).reduce((str, [key, value])=> {
         if (isObject(value)) {
-          newKey = iter(key, depth + 1);
-          newValue = iter(value, depth + 1);
-        } else {
-          newKey = stringify(key);
-          newValue = stringify(value);
+          const newKey = iter(key, depth + 1);
+          const newValue = iter(value, depth + 1);
+          return `${str}\n${replacerStr}${newKey}: ${newValue}`;
         }
 
-        str += `\n${replacerStr}${newKey}: ${newValue}`;
-        return undefined;
-      });
+        const newKey = stringify(key);
+        const newValue = stringify(value);
+        return `${str}\n${replacerStr}${newKey}: ${newValue}`;
+      }, '');
 
-      return `${openParen}${str}\n${closeParen}`;
+      return `{${result}\n${closeParen}`;
     }
 
     if (typeof currentData === 'string') {
