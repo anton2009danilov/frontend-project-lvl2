@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 
 const stringify = (data, replacer = ' ', replacersCount = 1) => {
@@ -42,49 +44,61 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
   return iter(data, 1);
 };
 
+const getSign = (format) => {
+  switch (format) {
+    case 'added':
+      return '+';
+    case 'removed':
+      return '-';
+    default:
+      return null;
+  }
+};
+
 const format = (data) => {
-  const result = {};
   const replacer = ' ';
   if (!data) {
-    return null;
+    return data;
   }
 
-  Object.entries(data).forEach(([key, item]) => {
-    if (item.nodeFormat === 'tree' && !item.sign) {
-      result[`${replacer.repeat(2)}${key}`] = format(item);
+  if (typeof data !== 'object') {
+    return data;
+  }
 
-      if (item.value) {
-        if (item.value.nodeFormat === 'tree') {
-          result[`${replacer.repeat(2)}${key}`] = format(item);
-        }
+  return data.reduce((formattedObj, item) => {
+    const { value, children, type } = item;
+    const sign = getSign(type);
 
-        if (item.value.nodeFormat === 'item') {
-          result[`${replacer.repeat(2)}${key}`] = format(item.value);
-        } else {
-          result[`${replacer.repeat(2)}${key}`] = format(item.value);
-        }
-      }
+    if (children !== undefined && !sign) {
+      const name = `${replacer.repeat(2)}${item.name}`;
+      return _.set({ ...formattedObj }, [name], format(children));
     }
 
-    if (item.nodeFormat === 'tree' && item.sign) {
-      result[`${item.sign}${replacer}${key}`] = format(item.value);
+    if (children !== undefined && sign) {
+      const name = `${sign}${replacer}${item.name}`;
+      return _.set({ ...formattedObj }, [name], format(children));
     }
 
-    if (item.nodeFormat === 'list') {
-      result[`-${replacer}${key}`] = item.before.nodeFormat === 'tree' ? format(item.before.value) : item.before.value;
-      result[`+${replacer}${key}`] = item.after.nodeFormat === 'tree' ? format(item.after.value) : item.after.value;
+    if (type === 'updated') {
+      const beforeValueName = `-${replacer}${item.name}`;
+      const afterValueName = `+${replacer}${item.name}`;
+      const itemWithBeforeValue = _.set(
+        { ...formattedObj },
+        [beforeValueName],
+        format(item.before),
+      );
+      return _.set(itemWithBeforeValue, afterValueName, format(item.after));
     }
 
-    if (item.nodeFormat === 'item' && !item.sign) {
-      result[`${replacer.repeat(2)}${key}`] = item.value;
+    if (type === 'added' || type === 'removed') {
+      const name = `${sign}${replacer}${item.name}`;
+      const newValue = value === undefined ? format(children) : value;
+      return _.set({ ...formattedObj }, [name], newValue);
     }
 
-    if (item.nodeFormat === 'item' && item.sign) {
-      result[`${item.sign}${replacer}${key}`] = item.value;
-    }
-  });
-
-  return result;
+    const name = `${replacer.repeat(2)}${item.name}`;
+    return _.set({ ...formattedObj }, name, value);
+  }, {});
 };
 
 const stylish = (data) => stringify(format(data), ' ', 2);
