@@ -1,12 +1,4 @@
 {
-  "test": 1,
-  "test2": 555,
-  "test4": "!!!!!!!!!!",
-  "test5": {
-    "AAA": "AAAAAAAAAAA",
-    "BBB": "BBBBBBBBBBB"
-  },
-  "test6": 6,
   "common": {
     "follow": false,
     "setting1": "Value 1",
