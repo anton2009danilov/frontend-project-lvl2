@@ -13,16 +13,16 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
 
       const closingBrace = `${closingReplacerStr}}`;
 
-      const result = Object.entries(currentData).reduce((str, [key, value]) => {
+      const result = Object.entries(currentData).reduce((accString, [key, value]) => {
         if (isObject(value)) {
           const newKey = iter(key, depth + 1);
           const newValue = iter(value, depth + 1);
-          return `${str}\n${replacerStr}${newKey}: ${newValue}`;
+          return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
         }
 
         const newKey = stringify(key);
         const newValue = stringify(value);
-        return `${str}\n${replacerStr}${newKey}: ${newValue}`;
+        return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
       }, '');
 
       return `{${result}\n${closingBrace}`;
@@ -38,8 +38,8 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
   return iter(data, 1);
 };
 
-const getSign = (format) => {
-  switch (format) {
+const getSign = (type) => {
+  switch (type) {
     case 'added':
       return '+';
     case 'removed':
@@ -49,33 +49,66 @@ const getSign = (format) => {
   }
 };
 
-const format = (data) => {
-  const replacer = ' ';
+const defineFormatType = (data) => {
   if (!data) {
-    return data;
+    return 'no format';
   }
 
   if (typeof data !== 'object') {
+    return 'no format';
+  }
+
+  const { children, type } = data;
+
+  if (children !== undefined) {
+    return 'format item with children';
+  }
+
+  if (type === 'updated') {
+    return 'format updated item';
+  }
+
+  if (type === 'added' || type === 'removed') {
+    return 'format added or removed item';
+  }
+
+  return 'format unchanged item';
+};
+
+const formatUnchangedItemName = (item, sign = null, replacer = ' ') => {
+  if (!sign) {
+    return `${replacer.repeat(2)}${item.name}`;
+  }
+
+  return `${sign}${replacer}${item.name}`;
+};
+
+const formatUpdatedItemName = (item, replacer = ' ') => {
+  const beforeValueName = `-${replacer}${item.name}`;
+  const afterValueName = `+${replacer}${item.name}`;
+
+  return [beforeValueName, afterValueName];
+};
+
+const format = (data) => {
+  const dataFormatType = defineFormatType(data);
+
+  if (dataFormatType === 'no format') {
     return data;
   }
 
   return data.reduce((formattedObj, item) => {
     const { value, children, type } = item;
+    const itemFormatType = defineFormatType(item);
     const sign = getSign(type);
 
-    if (children !== undefined && !sign) {
-      const name = `${replacer.repeat(2)}${item.name}`;
+    if (itemFormatType === 'format item with children') {
+      const name = formatUnchangedItemName(item, sign);
       return _.set({ ...formattedObj }, [name], format(children));
     }
 
-    if (children !== undefined && sign) {
-      const name = `${sign}${replacer}${item.name}`;
-      return _.set({ ...formattedObj }, [name], format(children));
-    }
-
-    if (type === 'updated') {
-      const beforeValueName = `-${replacer}${item.name}`;
-      const afterValueName = `+${replacer}${item.name}`;
+    if (itemFormatType === 'format updated item') {
+      const [beforeValueName, afterValueName] = formatUpdatedItemName(item);
       const itemWithBeforeValue = _.set(
         { ...formattedObj },
         [beforeValueName],
@@ -84,13 +117,13 @@ const format = (data) => {
       return _.set(itemWithBeforeValue, afterValueName, format(item.after));
     }
 
-    if (type === 'added' || type === 'removed') {
-      const name = `${sign}${replacer}${item.name}`;
+    if (itemFormatType === 'format added or removed item') {
+      const name = formatUnchangedItemName(item, sign);
       const newValue = value === undefined ? format(children) : value;
       return _.set({ ...formattedObj }, [name], newValue);
     }
 
-    const name = `${replacer.repeat(2)}${item.name}`;
+    const name = formatUnchangedItemName(item);
     return _.set({ ...formattedObj }, name, value);
   }, {});
 };
