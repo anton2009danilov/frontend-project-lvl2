@@ -7,11 +7,11 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
     if (isObject(currentData)) {
       const replacerStr = replacer.repeat(replacersCount * depth + 2 * (depth - 1));
 
-      const parenReplacerStr = depth === 1
+      const closingReplacerStr = depth === 1
         ? replacer.repeat(replacersCount * (depth - 1))
         : replacer.repeat(replacersCount * depth + 2 * (depth - 2));
 
-      const closeParen = `${parenReplacerStr}}`;
+      const closingBrace = `${closingReplacerStr}}`;
 
       const result = Object.entries(currentData).reduce((str, [key, value]) => {
         if (isObject(value)) {
@@ -25,7 +25,7 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
         return `${str}\n${replacerStr}${newKey}: ${newValue}`;
       }, '');
 
-      return `{${result}\n${closeParen}`;
+      return `{${result}\n${closingBrace}`;
     }
 
     if (typeof currentData === 'string') {
