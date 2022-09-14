@@ -52,20 +52,8 @@ const defineChangeType = (node1, node2) => {
   return 'value updated to new value';
 };
 
-const makeChange = (typeOfChange, nodes, currentName = null) => {
+const updateNode = (typeOfChange, nodes, currentName = null) => {
   const [node1, node2] = nodes;
-
-  if (typeOfChange === 'added') {
-    return { ...node2, type: 'added' };
-  }
-
-  if (typeOfChange === 'removed') {
-    return { ...node1, type: 'removed' };
-  }
-
-  if (typeOfChange === 'unchanged') {
-    return node1;
-  }
 
   if (typeOfChange === 'node updated to new value') {
     return {
@@ -91,6 +79,24 @@ const makeChange = (typeOfChange, nodes, currentName = null) => {
     after: node2.value,
     type: 'updated',
   };
+};
+
+const makeChange = (typeOfChange, nodes, currentName = null) => {
+  const [node1, node2] = nodes;
+
+  if (typeOfChange === 'added') {
+    return { ...node2, type: 'added' };
+  }
+
+  if (typeOfChange === 'removed') {
+    return { ...node1, type: 'removed' };
+  }
+
+  if (typeOfChange === 'unchanged') {
+    return node1;
+  }
+
+  return updateNode(typeOfChange, nodes, currentName);
 };
 
 const buildDifferencesTree = (data1, data2) => {
