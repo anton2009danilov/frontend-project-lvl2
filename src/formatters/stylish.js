@@ -62,34 +62,47 @@ const formatUpdatedName = (name, replacer = ' ') => {
   return [beforeValueName, afterValueName];
 };
 
+const formatChildren = (formattedObj, item, formatFunction) => {
+  const { children, type } = item;
+  const name = formatUnchangedName(item.name, getSign(type));
+  return _.set({ ...formattedObj }, [name], formatFunction(children));
+};
+
+const formatUpdatedItem = (formattedObj, item, formatFunction) => {
+  const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
+  const itemWithBeforeValue = _.set(
+    { ...formattedObj },
+    [beforeValueName],
+    formatFunction(item.before),
+  );
+  return _.set(itemWithBeforeValue, afterValueName, formatFunction(item.after));
+};
+
+const formatAddedOrRemovedItem = (formattedObj, item, formatFunction) => {
+  const { value, children, type } = item;
+  const name = formatUnchangedName(item.name, getSign(type));
+  const newValue = (value === undefined) ? formatFunction(children) : value;
+  return _.set({ ...formattedObj }, [name], newValue);
+};
+
 const format = (data) => {
   if (!data || typeof data !== 'object') {
     return data;
   }
 
   return data.reduce((formattedObj, item) => {
-    const { value, children, type } = item;
-    const sign = getSign(type);
+    const { value, type } = item;
 
     if (item.children) {
-      const name = formatUnchangedName(item.name, sign);
-      return _.set({ ...formattedObj }, [name], format(children));
+      return formatChildren(formattedObj, item, format);
     }
 
     if (type === 'updated') {
-      const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
-      const itemWithBeforeValue = _.set(
-        { ...formattedObj },
-        [beforeValueName],
-        format(item.before),
-      );
-      return _.set(itemWithBeforeValue, afterValueName, format(item.after));
+      return formatUpdatedItem(formattedObj, item, format);
     }
 
     if (type === 'added' || type === 'removed') {
-      const name = formatUnchangedName(item.name, sign);
-      const newValue = value === undefined ? format(children) : value;
-      return _.set({ ...formattedObj }, [name], newValue);
+      return formatAddedOrRemovedItem(formattedObj, item, format);
     }
 
     const name = formatUnchangedName(item.name);
