@@ -1,13 +1,13 @@
 import plain from './plain.js';
 import stylish from './stylish.js';
 
-export default (data, formatterType) => {
-  if (formatterType === 'plain') {
-    return plain(data);
+export default (data, formatter) => {
+  switch (formatter) {
+    case 'plain':
+      return plain(data);
+    case 'json':
+      return JSON.stringify(data);
+    default:
+      return stylish(data);
   }
-
-  if (formatterType === 'json') {
-    return JSON.stringify(data);
-  }
-  return stylish(data);
 };
