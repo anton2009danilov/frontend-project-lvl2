@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
+import { test } from '@jest/globals';
 import genDiff from '../src/gendiff.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,32 +26,41 @@ const jsonResult = readFileSync(jsonResultPath, 'utf-8', (err, data) => {
   return JSON.parse(data);
 });
 
-test('gendiff file1.json file2.json', () => {
-  const fixture1 = getFixturePath('file1.json');
-  const fixture2 = getFixturePath('file2.json');
-  expect(genDiff(fixture1, fixture2)).toBe(stylishResult);
-});
-
-test('gendiff file1.yaml file2.yaml', () => {
-  const fixture1 = getFixturePath('file1.yaml');
-  const fixture2 = getFixturePath('file2.yaml');
-  expect(genDiff(fixture1, fixture2)).toBe(stylishResult);
-});
-
-test('gendiff file1.json file2.yaml', () => {
-  const fixture1 = getFixturePath('file1.json');
-  const fixture2 = getFixturePath('file2.yaml');
-  expect(genDiff(fixture1, fixture2)).toBe(stylishResult);
-});
-
-test('gendiff -f plain file1.json file2.json', () => {
-  const fixture1 = getFixturePath('file1.json');
-  const fixture2 = getFixturePath('file2.json');
-  expect(genDiff(fixture1, fixture2, 'plain')).toBe(plainResult);
-});
-
-test('gendiff -f json file1.json file2.json', () => {
-  const fixture1 = getFixturePath('file1.json');
-  const fixture2 = getFixturePath('file2.json');
-  expect(genDiff(fixture1, fixture2, 'json')).toBe(jsonResult);
+test.each([
+  {
+    fileName1: 'file1.json',
+    fileName2: 'file2.json',
+    format: null,
+    expected: stylishResult,
+  },
+  {
+    fileName1: 'file1.yaml',
+    fileName2: 'file2.yaml',
+    format: null,
+    expected: stylishResult,
+  },
+  {
+    fileName1: 'file1.json',
+    fileName2: 'file2.yaml',
+    format: null,
+    expected: stylishResult,
+  },
+  {
+    fileName1: 'file1.json',
+    fileName2: 'file2.yaml',
+    format: 'plain',
+    expected: plainResult,
+  },
+  {
+    fileName1: 'file1.json',
+    fileName2: 'file2.yaml',
+    format: 'json',
+    expected: jsonResult,
+  },
+])('gendiff $file1 $file2', ({
+  fileName1, fileName2, format, expected,
+}) => {
+  const fixture1 = getFixturePath(fileName1);
+  const fixture2 = getFixturePath(fileName2);
+  expect(genDiff(fixture1, fixture2, format)).toBe(expected);
 });
