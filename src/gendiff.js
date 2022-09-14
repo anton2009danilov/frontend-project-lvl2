@@ -4,7 +4,7 @@ import {
 } from 'fs';
 import * as path from 'path';
 import parse from './parsers.js';
-import format from '../formatters/index.js';
+import format from './formatters/index.js';
 
 const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 

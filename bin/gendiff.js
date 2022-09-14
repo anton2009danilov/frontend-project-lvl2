@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command, Option } from 'commander/esm.mjs';
-import action from '../lib/gendiff.js';
+import action from '../src/gendiff.js';
 
 const gendiff = () => {
   const program = new Command();
