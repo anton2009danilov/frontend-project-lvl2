@@ -31,37 +31,45 @@ const getCurrentKey = (parentKey, name) => {
   return name;
 };
 
-const formatAddedItem = (resultStr, currentKey, type, currentValue) => `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+const formatAddedItem = (resultStr, parentKey, item) => {
+  const { name, type } = item;
+  return `${resultStr}Property '${getCurrentKey(parentKey, name)}' was ${type} with value: ${prepareForDisplay(getCurrentValue(item))}\n`;
+};
 
-const formatRemovedItem = (resultStr, currentKey, type) => `${resultStr}Property '${currentKey}' was ${type}\n`;
+const formatRemovedItem = (resultStr, parentKey, item) => {
+  const { name, type } = item;
+  return `${resultStr}Property '${getCurrentKey(parentKey, name)}' was ${type}\n`;
+};
 
-const formatUpdatedItem = (resultStr, currentKey, item) => {
-  const { type, before, after } = item;
+const formatUpdatedItem = (resultStr, parentKey, item) => {
+  const {
+    name, type, before, after,
+  } = item;
 
-  return `${resultStr}Property '${currentKey}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
+  return `${resultStr}Property '${getCurrentKey(parentKey, name)}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
+};
+
+const formatUnchangedItem = (item, parentKey, resultStr, stringify) => {
+  const { children, name } = item;
+  if (children !== undefined) {
+    return stringify(children, resultStr, getCurrentKey(parentKey, name));
+  }
+
+  return resultStr;
 };
 
 const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, item) => {
-  const {
-    name, type, children,
-  } = item;
+  const { type } = item;
 
   switch (type) {
     case 'added':
-      return formatAddedItem(
-        resultStr,
-        getCurrentKey(parentKey, name),
-        type,
-        getCurrentValue(item),
-      );
+      return formatAddedItem(resultStr, parentKey, item);
     case 'removed':
-      return formatRemovedItem(resultStr, getCurrentKey(parentKey, name), type);
+      return formatRemovedItem(resultStr, parentKey, item);
     case 'updated':
-      return formatUpdatedItem(resultStr, getCurrentKey(parentKey, name), item);
+      return formatUpdatedItem(resultStr, parentKey, item);
     default:
-      return (children !== undefined)
-        ? stringify(children, resultStr, getCurrentKey(parentKey, name))
-        : resultStr;
+      return formatUnchangedItem(item, parentKey, resultStr, stringify);
   }
 }, str);
 
