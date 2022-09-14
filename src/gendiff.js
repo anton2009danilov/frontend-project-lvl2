@@ -28,21 +28,17 @@ const buildTree = (data) => {
   }
 
   const tree = props.reduce((root, [itemName, itemValue]) => {
-    const value = isObject(itemValue) ? undefined : itemValue;
-    const children = isObject(itemValue) ? buildTree(itemValue) : undefined;
+    if (isObject(itemValue)) {
+      return [...root, {
+        name: itemName,
+        children: buildTree(itemValue),
+      }];
+    }
 
-    const newNode = {
+    return [...root, {
       name: itemName,
-      value,
-      children,
-    };
-
-    const newRoot = [
-      ...root,
-      newNode,
-    ];
-
-    return newRoot;
+      value: itemValue,
+    }];
   }, []);
 
   return tree;
