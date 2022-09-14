@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "generator-of-differences_anton2009danilov",
-  "main": "lib/gendiff.js",
+  "main": "src/gendiff.js",
   "bin": {
     "gendiff": "bin/gendiff.js"
   },
