@@ -6,8 +6,6 @@ import * as path from 'path';
 import parse from './parsers.js';
 import format from './formatters/index.js';
 
-const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
-
 const createAbsoluteFilepath = (filepath) => {
   if (path.isAbsolute(filepath)) {
     return filepath;
@@ -28,7 +26,7 @@ const buildTree = (data) => {
   }
 
   const tree = props.reduce((root, [itemName, itemValue]) => {
-    if (isObject(itemValue)) {
+    if (_.isObject(itemValue)) {
       return [...root, {
         name: itemName,
         children: buildTree(itemValue),

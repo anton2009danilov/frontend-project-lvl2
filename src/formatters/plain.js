@@ -1,8 +1,9 @@
-const isArray = (obj) => Object.prototype.toString.call(obj) === '[object Array]';
+import _ from 'lodash';
+
 const getSimpleValue = (value) => (typeof value === 'object' ? '[complex value]' : value);
 
 const prepareForDisplay = (value) => {
-  if (isArray(value)) {
+  if (_.isArray(value)) {
     return '[complex value]';
   }
 

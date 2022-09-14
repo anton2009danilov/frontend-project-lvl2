@@ -1,10 +1,8 @@
 import _ from 'lodash';
 
-const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
-
 const stringify = (data, replacer = ' ', replacersCount = 1) => {
   const iter = (currentData, depth) => {
-    if (isObject(currentData)) {
+    if (_.isObject(currentData)) {
       const replacerStr = replacer.repeat(replacersCount * depth + 2 * (depth - 1));
 
       const closingReplacerStr = depth === 1
@@ -14,7 +12,7 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
       const closingBrace = `${closingReplacerStr}}`;
 
       const result = Object.entries(currentData).reduce((accString, [key, value]) => {
-        if (isObject(value)) {
+        if (_.isObject(value)) {
           const newKey = iter(key, depth + 1);
           const newValue = iter(value, depth + 1);
           return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
