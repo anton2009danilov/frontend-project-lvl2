@@ -47,32 +47,6 @@ const getSign = (type) => {
   }
 };
 
-const defineFormatType = (data) => {
-  if (!data) {
-    return 'no format';
-  }
-
-  if (typeof data !== 'object') {
-    return 'no format';
-  }
-
-  const { children, type } = data;
-
-  if (children !== undefined) {
-    return 'format item with children';
-  }
-
-  if (type === 'updated') {
-    return 'format updated item';
-  }
-
-  if (type === 'added' || type === 'removed') {
-    return 'format added or removed item';
-  }
-
-  return 'format unchanged item';
-};
-
 const formatUnchangedName = (name, sign = null, replacer = ' ') => {
   if (!sign) {
     return `${replacer.repeat(2)}${name}`;
@@ -89,23 +63,20 @@ const formatUpdatedName = (name, replacer = ' ') => {
 };
 
 const format = (data) => {
-  const dataFormatType = defineFormatType(data);
-
-  if (dataFormatType === 'no format') {
+  if (!data || typeof data !== 'object') {
     return data;
   }
 
   return data.reduce((formattedObj, item) => {
     const { value, children, type } = item;
-    const itemFormatType = defineFormatType(item);
     const sign = getSign(type);
 
-    if (itemFormatType === 'format item with children') {
+    if (item.children) {
       const name = formatUnchangedName(item.name, sign);
       return _.set({ ...formattedObj }, [name], format(children));
     }
 
-    if (itemFormatType === 'format updated item') {
+    if (type === 'updated') {
       const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
       const itemWithBeforeValue = _.set(
         { ...formattedObj },
@@ -115,7 +86,7 @@ const format = (data) => {
       return _.set(itemWithBeforeValue, afterValueName, format(item.after));
     }
 
-    if (itemFormatType === 'format added or removed item') {
+    if (type === 'added' || type === 'removed') {
       const name = formatUnchangedName(item.name, sign);
       const newValue = value === undefined ? format(children) : value;
       return _.set({ ...formattedObj }, [name], newValue);
