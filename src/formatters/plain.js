@@ -20,19 +20,16 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, it
   const currentValue = value === undefined ? getSimpleValue(children) : value;
   const currentKey = parentKey ? `${parentKey}.${name}` : name;
 
-  if (type === 'added') {
-    return `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+  switch (type) {
+    case 'added':
+      return `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+    case 'removed':
+      return `${resultStr}Property '${currentKey}' was ${type}\n`;
+    case 'updated':
+      return `${resultStr}Property '${currentKey}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
+    default:
+      return children !== undefined ? stringify(children, resultStr, currentKey) : resultStr;
   }
-
-  if (type === 'removed') {
-    return `${resultStr}Property '${currentKey}' was ${type}\n`;
-  }
-
-  if (type === 'updated') {
-    return `${resultStr}Property '${currentKey}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
-  }
-
-  return children !== undefined ? stringify(children, resultStr, currentKey) : resultStr;
 }, str);
 
 const plain = (data) => stringify(data).replace(/\n$/, '');
