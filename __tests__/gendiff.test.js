@@ -30,37 +30,37 @@ test.each([
   {
     fileName1: 'file1.json',
     fileName2: 'file2.json',
-    format: null,
+    formatter: null,
     expected: stylishResult,
   },
   {
     fileName1: 'file1.yaml',
     fileName2: 'file2.yaml',
-    format: null,
+    formatter: null,
     expected: stylishResult,
   },
   {
     fileName1: 'file1.json',
     fileName2: 'file2.yaml',
-    format: null,
+    formatter: null,
     expected: stylishResult,
   },
   {
     fileName1: 'file1.json',
     fileName2: 'file2.yaml',
-    format: 'plain',
+    formatter: 'plain',
     expected: plainResult,
   },
   {
     fileName1: 'file1.json',
     fileName2: 'file2.yaml',
-    format: 'json',
+    formatter: 'json',
     expected: jsonResult,
   },
 ])('gendiff $file1 $file2', ({
-  fileName1, fileName2, format, expected,
+  fileName1, fileName2, formatter, expected,
 }) => {
   const fixture1 = getFixturePath(fileName1);
   const fixture2 = getFixturePath(fileName2);
-  expect(genDiff(fixture1, fixture2, format)).toBe(expected);
+  expect(genDiff(fixture1, fixture2, formatter)).toBe(expected);
 });
