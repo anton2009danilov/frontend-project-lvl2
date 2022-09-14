@@ -13,11 +13,29 @@ const prepareForDisplay = (value) => {
   return value;
 };
 
-const formatAdded = (resultStr, currentKey, type, currentValue) => `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+const getCurrentValue = (item) => {
+  const { value, children } = item;
 
-const formatRemoved = (resultStr, currentKey, type) => `${resultStr}Property '${currentKey}' was ${type}\n`;
+  if (value === undefined) {
+    return getSimpleValue(children);
+  }
 
-const formatUpdated = (resultStr, currentKey, item) => {
+  return value;
+};
+
+const getCurrentKey = (parentKey, name) => {
+  if (parentKey) {
+    return `${parentKey}.${name}`;
+  }
+
+  return name;
+};
+
+const formatAddedItem = (resultStr, currentKey, type, currentValue) => `${resultStr}Property '${currentKey}' was ${type} with value: ${prepareForDisplay(currentValue)}\n`;
+
+const formatRemovedItem = (resultStr, currentKey, type) => `${resultStr}Property '${currentKey}' was ${type}\n`;
+
+const formatUpdatedItem = (resultStr, currentKey, item) => {
   const { type, before, after } = item;
 
   return `${resultStr}Property '${currentKey}' was ${type}. From ${prepareForDisplay(before)} to ${prepareForDisplay(after)}\n`;
@@ -25,20 +43,25 @@ const formatUpdated = (resultStr, currentKey, item) => {
 
 const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, item) => {
   const {
-    name, type, value, children,
+    name, type, children,
   } = item;
-  const currentValue = (value === undefined) ? getSimpleValue(children) : value;
-  const currentKey = parentKey ? `${parentKey}.${name}` : name;
 
   switch (type) {
     case 'added':
-      return formatAdded(resultStr, currentKey, type, currentValue);
+      return formatAddedItem(
+        resultStr,
+        getCurrentKey(parentKey, name),
+        type,
+        getCurrentValue(item),
+      );
     case 'removed':
-      return formatRemoved(resultStr, currentKey, type);
+      return formatRemovedItem(resultStr, getCurrentKey(parentKey, name), type);
     case 'updated':
-      return formatUpdated(resultStr, currentKey, item);
+      return formatUpdatedItem(resultStr, getCurrentKey(parentKey, name), item);
     default:
-      return (children !== undefined) ? stringify(children, resultStr, currentKey) : resultStr;
+      return (children !== undefined)
+        ? stringify(children, resultStr, getCurrentKey(parentKey, name))
+        : resultStr;
   }
 }, str);
 
