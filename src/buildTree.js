@@ -24,19 +24,7 @@ const buildTree = (data) => {
   return tree;
 };
 
-const defineChangeType = (node1, node2) => {
-  if (!node1) {
-    return 'added';
-  }
-
-  if (!node2) {
-    return 'removed';
-  }
-
-  if (_.isEqual(node1, node2)) {
-    return 'unchanged';
-  }
-
+const defineChildrenChangeType = (node1, node2) => {
   if (node1.children && node2.children) {
     return 'node updated to new node';
   }
@@ -50,6 +38,22 @@ const defineChangeType = (node1, node2) => {
   }
 
   return 'value updated to new value';
+};
+
+const defineItemChangeType = (node1, node2) => {
+  if (!node1) {
+    return 'added';
+  }
+
+  if (!node2) {
+    return 'removed';
+  }
+
+  if (_.isEqual(node1, node2)) {
+    return 'unchanged';
+  }
+
+  return defineChildrenChangeType(node1, node2);
 };
 
 const updateNode = (typeOfChange, nodes, currentName = null) => {
@@ -113,7 +117,7 @@ const buildDifferencesTree = (data1, data2) => {
       name: currentName,
     })[0];
 
-    const typeOfChange = defineChangeType(itemOfTree1, itemOfTree2);
+    const typeOfChange = defineItemChangeType(itemOfTree1, itemOfTree2);
 
     if (typeOfChange === 'node updated to new node') {
       const resultNode = {
