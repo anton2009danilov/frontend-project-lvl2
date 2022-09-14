@@ -149,18 +149,18 @@ const action = (filepath1, filepath2, formatter = 'stylish') => {
 
   const absPathOfFile2 = createAbsoluteFilepath(filepath2);
 
-  const fileOneString = readFileSync(absPathOfFile1, 'utf-8', (err, data) => {
+  const fileData1 = readFileSync(absPathOfFile1, 'utf-8', (err, data) => {
     if (err) throw err;
     return JSON.parse(data);
   });
 
-  const fileTwoString = readFileSync(absPathOfFile2, 'utf-8', (err, data) => {
+  const fileData2 = readFileSync(absPathOfFile2, 'utf-8', (err, data) => {
     if (err) throw err;
     return JSON.parse(data);
   });
 
-  const file1 = parse(fileOneString, filepath1);
-  const file2 = parse(fileTwoString, filepath2);
+  const file1 = parse(fileData1, filepath1);
+  const file2 = parse(fileData2, filepath2);
 
   const tree1 = buildTree(file1);
   const tree2 = buildTree(file2);
