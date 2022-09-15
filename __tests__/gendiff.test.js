@@ -26,7 +26,7 @@ const jsonResult = readFileSync(jsonResultPath, 'utf-8', (err, data) => {
   return JSON.parse(data);
 });
 
-test.each([
+const testCases = [
   {
     fileName1: 'file1.json',
     fileName2: 'file2.json',
@@ -57,7 +57,9 @@ test.each([
     formatter: 'json',
     expected: jsonResult,
   },
-])('gendiff $file1 $file2', ({
+];
+
+test.each(testCases)('gendiff $file1 $file2', ({
   fileName1, fileName2, formatter, expected,
 }) => {
   const fixture1 = getFixturePath(fileName1);
