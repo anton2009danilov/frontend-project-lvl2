@@ -48,7 +48,7 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, it
     case undefined:
       return (children !== undefined) ? stringify(children, resultStr, key) : resultStr;
     default:
-      throw Error(`An item of tree has unknown type: ${type}`);
+      throw Error(`Unexpected value of property 'type': ${type}`);
   }
 }, str);
 
