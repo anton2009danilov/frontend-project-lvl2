@@ -12,7 +12,7 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
       const closingBrace = `${closingReplacerStr}}`;
 
       const result = Object.entries(currentData).reduce((accString, [key, value]) => {
-        const newKey = stringify(key);
+        const newKey = `${key}`;
         const newValue = iter(value, depth + 1);
 
         return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
