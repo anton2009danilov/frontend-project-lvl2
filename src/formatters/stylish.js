@@ -78,7 +78,14 @@ const formatUpdatedItem = (formattedObj, item, formatFunction) => {
   return _.set(itemWithBeforeValue, afterValueName, formatFunction(item.after));
 };
 
-const formatAddedOrRemovedItem = (formattedObj, item, formatFunction) => {
+const formatAddedItem = (formattedObj, item, formatFunction) => {
+  const { value, children, type } = item;
+  const name = formatUnchangedName(item.name, getSign(type));
+  const newValue = (value === undefined) ? formatFunction(children) : value;
+  return _.set({ ...formattedObj }, [name], newValue);
+};
+
+const formatRemovedItem = (formattedObj, item, formatFunction) => {
   const { value, children, type } = item;
   const name = formatUnchangedName(item.name, getSign(type));
   const newValue = (value === undefined) ? formatFunction(children) : value;
@@ -93,20 +100,20 @@ const format = (data) => {
   return data.reduce((formattedObj, item) => {
     const { value, type } = item;
 
-    if (item.children) {
-      return formatChildren(formattedObj, item, format);
+    switch (type) {
+      case 'updated':
+        return formatUpdatedItem(formattedObj, item, format);
+      case 'added':
+        return formatAddedItem(formattedObj, item, format);
+      case 'removed':
+        return formatRemovedItem(formattedObj, item, format);
+      case undefined:
+        return item.children
+          ? formatChildren(formattedObj, item, format)
+          : _.set({ ...formattedObj }, formatUnchangedName(item.name), value);
+      default:
+        throw new Error(`Unexpected value of property 'type': ${type}`);
     }
-
-    if (type === 'updated') {
-      return formatUpdatedItem(formattedObj, item, format);
-    }
-
-    if (type === 'added' || type === 'removed') {
-      return formatAddedOrRemovedItem(formattedObj, item, format);
-    }
-
-    const name = formatUnchangedName(item.name);
-    return _.set({ ...formattedObj }, name, value);
   }, {});
 };
 
