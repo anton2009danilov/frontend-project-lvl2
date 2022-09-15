@@ -21,10 +21,6 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
       return `{${result}\n${closingBrace}`;
     }
 
-    if (typeof currentData === 'string') {
-      return currentData;
-    }
-
     return `${currentData}`;
   };
 
