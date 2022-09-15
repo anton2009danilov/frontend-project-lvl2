@@ -5,21 +5,16 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
     if (_.isObject(currentData)) {
       const replacerStr = replacer.repeat(replacersCount * depth + 2 * (depth - 1));
 
-      const closingReplacerStr = depth === 1
-        ? replacer.repeat(replacersCount * (depth - 1))
-        : replacer.repeat(replacersCount * depth + 2 * (depth - 2));
+      const closingReplacerStr = (depth === 1)
+        ? ''
+        : replacer.repeat(depth * (replacersCount + 2) - 4);
 
       const closingBrace = `${closingReplacerStr}}`;
 
       const result = Object.entries(currentData).reduce((accString, [key, value]) => {
-        if (_.isObject(value)) {
-          const newKey = iter(key, depth + 1);
-          const newValue = iter(value, depth + 1);
-          return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
-        }
-
         const newKey = stringify(key);
-        const newValue = stringify(value);
+        const newValue = iter(value, depth + 1);
+
         return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
       }, '');
 
