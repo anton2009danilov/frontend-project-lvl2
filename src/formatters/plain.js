@@ -48,7 +48,7 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, it
     case undefined:
       return (children !== undefined) ? stringify(children, resultStr, key) : resultStr;
     default:
-      throw Error(`Unexpected value of property 'type': ${type}`);
+      throw new Error(`Unexpected value of property 'type': ${type}`);
   }
 }, str);
 
