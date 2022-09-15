@@ -14,7 +14,7 @@ const createAbsoluteFilepath = (filepath) => {
   return path.resolve(process.cwd(), filepath);
 };
 
-const action = (filepath1, filepath2, formatter = 'stylish') => {
+const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
   const absPathOfFile1 = createAbsoluteFilepath(filepath1);
 
   const absPathOfFile2 = createAbsoluteFilepath(filepath2);
@@ -35,4 +35,4 @@ const action = (filepath1, filepath2, formatter = 'stylish') => {
   return format(buildDifferencesTree(file1, file2), formatter);
 };
 
-export default action;
+export default genDiff;
