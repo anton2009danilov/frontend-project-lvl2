@@ -24,42 +24,12 @@ const buildTree = (data) => {
   return tree;
 };
 
-const defineChildrenChangeType = (node1, node2) => {
+const updateNode = (node1, node2, currentName = null) => {
   if (node1.children && node2.children) {
-    return 'node updated to new node';
+    return 'build children differences tree';
   }
 
   if (node1.children && node2.value !== undefined) {
-    return 'node updated to new value';
-  }
-
-  if (node1.value !== undefined && node2.children) {
-    return 'value updated to new node';
-  }
-
-  return 'value updated to new value';
-};
-
-const defineItemChangeType = (node1, node2) => {
-  if (!node1) {
-    return 'added';
-  }
-
-  if (!node2) {
-    return 'removed';
-  }
-
-  if (_.isEqual(node1, node2)) {
-    return 'unchanged';
-  }
-
-  return defineChildrenChangeType(node1, node2);
-};
-
-const updateNode = (typeOfChange, nodes, currentName = null) => {
-  const [node1, node2] = nodes;
-
-  if (typeOfChange === 'node updated to new value') {
     return {
       name: currentName,
       before: node1.children,
@@ -68,7 +38,7 @@ const updateNode = (typeOfChange, nodes, currentName = null) => {
     };
   }
 
-  if (typeOfChange === 'value updated to new node') {
+  if (node1.value !== undefined && node2.children) {
     return {
       name: currentName,
       before: node1.value,
@@ -85,22 +55,20 @@ const updateNode = (typeOfChange, nodes, currentName = null) => {
   };
 };
 
-const makeChange = (typeOfChange, nodes, currentName = null) => {
-  const [node1, node2] = nodes;
-
-  if (typeOfChange === 'added') {
+const calcResultNode = (node1, node2, currentName = null) => {
+  if (!node1) {
     return { ...node2, type: 'added' };
   }
 
-  if (typeOfChange === 'removed') {
+  if (!node2) {
     return { ...node1, type: 'removed' };
   }
 
-  if (typeOfChange === 'unchanged') {
+  if (_.isEqual(node1, node2)) {
     return node1;
   }
 
-  return updateNode(typeOfChange, nodes, currentName);
+  return updateNode(node1, node2, currentName);
 };
 
 const buildDifferencesTree = (data1, data2) => {
@@ -117,17 +85,15 @@ const buildDifferencesTree = (data1, data2) => {
       name: currentName,
     })[0];
 
-    const typeOfChange = defineItemChangeType(itemOfTree1, itemOfTree2);
+    const resultNode = calcResultNode(itemOfTree1, itemOfTree2, currentName);
 
-    if (typeOfChange === 'node updated to new node') {
-      const resultNode = {
+    if (resultNode === 'build children differences tree') {
+      return [...root, {
         name: currentName,
         children: buildDifferencesTree(itemOfTree1.children, itemOfTree2.children),
-      };
-      return [...root, resultNode];
+      }];
     }
 
-    const resultNode = makeChange(typeOfChange, [itemOfTree1, itemOfTree2], currentName);
     return [...root, resultNode];
   }, []);
 
