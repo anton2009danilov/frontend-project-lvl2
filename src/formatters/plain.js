@@ -68,8 +68,10 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, it
       return formatRemovedItem(resultStr, parentKey, item);
     case 'updated':
       return formatUpdatedItem(resultStr, parentKey, item);
-    default:
+    case undefined:
       return formatUnchangedItem(item, parentKey, resultStr, stringify);
+    default:
+      throw Error(`An item of tree has unknown type: ${type}`);
   }
 }, str);
 
