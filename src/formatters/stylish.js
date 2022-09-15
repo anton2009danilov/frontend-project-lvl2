@@ -12,10 +12,9 @@ const stringify = (data, replacer = ' ', replacersCount = 1) => {
       const closingBrace = `${closingReplacerStr}}`;
 
       const result = Object.entries(currentData).reduce((accString, [key, value]) => {
-        const newKey = `${key}`;
-        const newValue = iter(value, depth + 1);
+        const formattedValue = iter(value, depth + 1);
 
-        return `${accString}\n${replacerStr}${newKey}: ${newValue}`;
+        return `${accString}\n${replacerStr}${key}: ${formattedValue}`;
       }, '');
 
       return `{${result}\n${closingBrace}`;
