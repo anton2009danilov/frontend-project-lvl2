@@ -78,14 +78,7 @@ const formatUpdatedItem = (formattedObj, item, formatFunction) => {
   return _.set(itemWithBeforeValue, afterValueName, formatFunction(item.after));
 };
 
-const formatAddedItem = (formattedObj, item, formatFunction) => {
-  const { value, children, type } = item;
-  const name = formatUnchangedName(item.name, getSign(type));
-  const newValue = (value === undefined) ? formatFunction(children) : value;
-  return _.set({ ...formattedObj }, [name], newValue);
-};
-
-const formatRemovedItem = (formattedObj, item, formatFunction) => {
+const formatMovedItem = (formattedObj, item, formatFunction) => {
   const { value, children, type } = item;
   const name = formatUnchangedName(item.name, getSign(type));
   const newValue = (value === undefined) ? formatFunction(children) : value;
@@ -104,9 +97,9 @@ const format = (data) => {
       case 'updated':
         return formatUpdatedItem(formattedObj, item, format);
       case 'added':
-        return formatAddedItem(formattedObj, item, format);
+        return formatMovedItem(formattedObj, item, format);
       case 'removed':
-        return formatRemovedItem(formattedObj, item, format);
+        return formatMovedItem(formattedObj, item, format);
       case undefined:
         return item.children
           ? formatChildren(formattedObj, item, format)
