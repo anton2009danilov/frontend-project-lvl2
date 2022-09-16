@@ -76,7 +76,7 @@ const formatMovedItem = (formattedObj, item, formatFunction) => {
 };
 
 const format = (data) => {
-  if (!data || typeof data !== 'object') {
+  if (!_.isObject(data)) {
     return data;
   }
 
