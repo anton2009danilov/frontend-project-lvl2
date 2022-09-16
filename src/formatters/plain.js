@@ -30,7 +30,7 @@ const getCurrentKey = (parentKey, name) => {
   return name;
 };
 
-const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, item) => {
+const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, item) => {
   const { name, children, type } = item;
   const key = getCurrentKey(parentKey, name);
   const value = getFormattedValue(item);
@@ -39,13 +39,13 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, it
 
   switch (type) {
     case 'added':
-      return `${resultStr}Property '${key}' was ${type} with value: ${value}\n`;
+      return `${logOfDiffs}Property '${key}' was ${type} with value: ${value}\n`;
     case 'removed':
-      return `${resultStr}Property '${key}' was ${type}\n`;
+      return `${logOfDiffs}Property '${key}' was ${type}\n`;
     case 'updated':
-      return `${resultStr}Property '${key}' was ${type}. From ${before} to ${after}\n`;
+      return `${logOfDiffs}Property '${key}' was ${type}. From ${before} to ${after}\n`;
     case undefined:
-      return (children !== undefined) ? stringify(children, resultStr, key) : resultStr;
+      return (children !== undefined) ? stringify(children, logOfDiffs, key) : logOfDiffs;
     default:
       throw new Error(`Unexpected value of property 'type': ${type}`);
   }
