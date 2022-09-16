@@ -14,12 +14,12 @@ const prepareForDisplay = (value) => {
   return value;
 };
 
-const getCurrentValue = (item) => {
+const getFormattedValue = (item) => {
   if (isTree(item)) {
     return '[complex value]';
   }
 
-  return item.value;
+  return prepareForDisplay(item.value);
 };
 
 const getCurrentKey = (parentKey, name) => {
@@ -33,7 +33,7 @@ const getCurrentKey = (parentKey, name) => {
 const stringify = (data, str = '', parentKey = '') => data.reduce((resultStr, item) => {
   const { name, children, type } = item;
   const key = getCurrentKey(parentKey, name);
-  const value = prepareForDisplay(getCurrentValue(item));
+  const value = getFormattedValue(item);
   const before = prepareForDisplay(item.before);
   const after = prepareForDisplay(item.after);
 
