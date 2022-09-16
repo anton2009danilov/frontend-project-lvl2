@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const getSimpleValue = (value) => (typeof value === 'object' ? '[complex value]' : value);
+const isTree = (data) => data.children || false;
 
 const prepareForDisplay = (value) => {
   if (_.isArray(value)) {
@@ -10,17 +10,16 @@ const prepareForDisplay = (value) => {
   if (typeof value === 'string' && value !== '[complex value]') {
     return `'${value}'`;
   }
+
   return value;
 };
 
 const getCurrentValue = (item) => {
-  const { value, children } = item;
-
-  if (value === undefined) {
-    return getSimpleValue(children);
+  if (isTree(item)) {
+    return '[complex value]';
   }
 
-  return value;
+  return item.value;
 };
 
 const getCurrentKey = (parentKey, name) => {
