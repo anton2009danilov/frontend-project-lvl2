@@ -58,12 +58,6 @@ const updateTreeWithUnchangedItem = (tree, name, value) => _.set(
   value,
 );
 
-const formatChildren = (item, formatFunction) => {
-  const { children } = item;
-
-  return formatFunction(children);
-};
-
 const updateTreeWithUpdatedItem = (tree, item, formatFunction) => {
   const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
   const itemWithBeforeValue = _.set(
@@ -88,7 +82,9 @@ const format = (data) => {
   }
 
   return data.reduce((formattedTree, item) => {
-    const { name, value, type } = item;
+    const {
+      name, value, type, children,
+    } = item;
 
     switch (type) {
       case 'updated':
@@ -99,7 +95,7 @@ const format = (data) => {
         return updateTreeWithMovedItem(formattedTree, item, format);
       case undefined:
         return item.children
-          ? updateTreeWithUnchangedItem(formattedTree, name, formatChildren(item, format))
+          ? updateTreeWithUnchangedItem(formattedTree, name, format(children))
           : updateTreeWithUnchangedItem(formattedTree, name, value);
       default:
         throw new Error(`Unexpected value of property 'type': ${type}`);
