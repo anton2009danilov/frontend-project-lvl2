@@ -45,7 +45,7 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, i
     case 'updated':
       return `${logOfDiffs}Property '${key}' was ${type}. From ${before} to ${after}\n`;
     case undefined:
-      return (children !== undefined) ? stringify(children, logOfDiffs, key) : logOfDiffs;
+      return (isTree(item)) ? stringify(children, logOfDiffs, key) : logOfDiffs;
     default:
       throw new Error(`Unexpected value of property 'type': ${type}`);
   }
