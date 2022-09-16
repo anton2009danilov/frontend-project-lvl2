@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const isTree = (node) => node.children || false;
+const isTree = (data) => data.children || false;
 
 const buildTree = (data) => {
   if (data === null) {
