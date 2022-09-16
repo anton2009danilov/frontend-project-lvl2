@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+const isTree = (node) => node.children || false;
+
 const buildTree = (data) => {
   if (data === null) {
     return data;
@@ -25,11 +27,11 @@ const buildTree = (data) => {
 };
 
 const updateNode = (node1, node2, currentName = null) => {
-  if (node1.children && node2.children) {
+  if (isTree(node1) && isTree(node2)) {
     return 'build children differences tree';
   }
 
-  if (node1.children && node2.value !== undefined) {
+  if (isTree(node1)) {
     return {
       name: currentName,
       before: node1.children,
@@ -38,7 +40,7 @@ const updateNode = (node1, node2, currentName = null) => {
     };
   }
 
-  if (node1.value !== undefined && node2.children) {
+  if (isTree(node2)) {
     return {
       name: currentName,
       before: node1.value,
