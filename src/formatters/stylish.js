@@ -52,27 +52,34 @@ const formatUpdatedName = (name, replacer = ' ') => {
   return [beforeValueName, afterValueName];
 };
 
-const formatChildren = (formattedObj, item, formatFunction) => {
-  const { children, type } = item;
-  const name = formatUnchangedName(item.name, getSign(type));
-  return _.set({ ...formattedObj }, [name], formatFunction(children));
+const updateTreeWithUnchangedItem = (tree, name, value) => _.set(
+  { ...tree },
+  formatUnchangedName(name),
+  value,
+);
+
+const formatChildren = (item, formatFunction) => {
+  const { children } = item;
+
+  return formatFunction(children);
 };
 
-const formatUpdatedItem = (formattedObj, item, formatFunction) => {
+const updateTreeWithUpdatedItem = (tree, item, formatFunction) => {
   const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
   const itemWithBeforeValue = _.set(
-    { ...formattedObj },
+    { ...tree },
     [beforeValueName],
     formatFunction(item.before),
   );
   return _.set(itemWithBeforeValue, afterValueName, formatFunction(item.after));
 };
 
-const formatMovedItem = (formattedObj, item, formatFunction) => {
+const updateTreeWithMovedItem = (tree, item, formatFunction) => {
   const { value, children, type } = item;
   const name = formatUnchangedName(item.name, getSign(type));
   const newValue = (value === undefined) ? formatFunction(children) : value;
-  return _.set({ ...formattedObj }, [name], newValue);
+
+  return _.set({ ...tree }, [name], newValue);
 };
 
 const format = (data) => {
@@ -80,20 +87,20 @@ const format = (data) => {
     return data;
   }
 
-  return data.reduce((formattedObj, item) => {
-    const { value, type } = item;
+  return data.reduce((formattedTree, item) => {
+    const { name, value, type } = item;
 
     switch (type) {
       case 'updated':
-        return formatUpdatedItem(formattedObj, item, format);
+        return updateTreeWithUpdatedItem(formattedTree, item, format);
       case 'added':
-        return formatMovedItem(formattedObj, item, format);
+        return updateTreeWithMovedItem(formattedTree, item, format);
       case 'removed':
-        return formatMovedItem(formattedObj, item, format);
+        return updateTreeWithMovedItem(formattedTree, item, format);
       case undefined:
         return item.children
-          ? formatChildren(formattedObj, item, format)
-          : _.set({ ...formattedObj }, formatUnchangedName(item.name), value);
+          ? updateTreeWithUnchangedItem(formattedTree, name, formatChildren(item, format))
+          : updateTreeWithUnchangedItem(formattedTree, name, value);
       default:
         throw new Error(`Unexpected value of property 'type': ${type}`);
     }
