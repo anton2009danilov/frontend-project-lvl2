@@ -1,13 +1,14 @@
 import _ from 'lodash';
 
 const isTree = (data) => data.children || false;
+const isComplex = (data) => _.isArray(data) || data === '[complex value]';
 
 const prepareForDisplay = (value) => {
-  if (_.isArray(value)) {
+  if (isComplex(value)) {
     return '[complex value]';
   }
 
-  if (typeof value === 'string' && value !== '[complex value]') {
+  if (_.isString(value)) {
     return `'${value}'`;
   }
 
