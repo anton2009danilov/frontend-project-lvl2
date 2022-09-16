@@ -22,7 +22,7 @@ const getFormattedValue = (item) => {
   return prepareForDisplay(item.value);
 };
 
-const getCurrentKey = (parentKey, name) => {
+const getCompositeKey = (parentKey, name) => {
   if (parentKey) {
     return `${parentKey}.${name}`;
   }
@@ -32,7 +32,7 @@ const getCurrentKey = (parentKey, name) => {
 
 const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, item) => {
   const { name, children, type } = item;
-  const key = getCurrentKey(parentKey, name);
+  const key = getCompositeKey(parentKey, name);
   const value = getFormattedValue(item);
   const before = prepareForDisplay(item.before);
   const after = prepareForDisplay(item.after);
