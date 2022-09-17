@@ -1,20 +1,23 @@
 import _ from 'lodash';
 
-const stringify = (data, replacer = ' ', replacersCount = 1) => {
+const formatClosingBrace = (filler, fillersCount, depth) => {
+  const closingfillerStr = (depth === 1)
+    ? ''
+    : filler.repeat(depth * (fillersCount + 2) - 4);
+
+  return `${closingfillerStr}}`;
+};
+
+const stringify = (data, filler = ' ', fillersCount = 1) => {
   const iter = (currentData, depth) => {
     if (_.isObject(currentData)) {
-      const replacerStr = replacer.repeat(replacersCount * depth + 2 * (depth - 1));
+      const fillerStr = filler.repeat(fillersCount * depth + 2 * (depth - 1));
+      const closingBrace = formatClosingBrace(filler, fillersCount, depth);
 
-      const closingReplacerStr = (depth === 1)
-        ? ''
-        : replacer.repeat(depth * (replacersCount + 2) - 4);
-
-      const closingBrace = `${closingReplacerStr}}`;
-
-      const result = Object.entries(currentData).reduce((accString, [key, value]) => {
+      const result = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
         const formattedValue = iter(value, depth + 1);
 
-        return `${accString}\n${replacerStr}${key}: ${formattedValue}`;
+        return `${logOfDiffs}\n${fillerStr}${key}: ${formattedValue}`;
       }, '');
 
       return `{${result}\n${closingBrace}`;
