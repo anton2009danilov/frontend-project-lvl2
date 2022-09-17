@@ -31,7 +31,7 @@ const getCompositeKey = (parentKey, name) => {
   return name;
 };
 
-const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, item) => {
+const stringify = (data, log = '', parentKey = '') => data.reduce((logOfDiffs, item) => {
   const { name, children, type } = item;
   const key = getCompositeKey(parentKey, name);
   const value = getFormattedValue(item);
@@ -50,7 +50,7 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, i
     default:
       throw new Error(`Unexpected value of property 'type': ${type}`);
   }
-}, str);
+}, log);
 
 const plain = (data) => stringify(data).trim();
 
