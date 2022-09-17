@@ -52,6 +52,6 @@ const stringify = (data, str = '', parentKey = '') => data.reduce((logOfDiffs, i
   }
 }, str);
 
-const plain = (data) => stringify(data).replace(/\n$/, '');
+const plain = (data) => stringify(data).trim();
 
 export default plain;
