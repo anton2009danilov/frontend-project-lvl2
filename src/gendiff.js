@@ -12,18 +12,16 @@ const createAbsoluteFilepath = (filepath) => (path.isAbsolute(filepath)
 );
 
 const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
-  // TODO: Можно просто absolutePath1
-  const absPathOfFile1 = createAbsoluteFilepath(filepath1);
-
-  const absPathOfFile2 = createAbsoluteFilepath(filepath2);
+  const absolutePath1 = createAbsoluteFilepath(filepath1);
+  const absolutePath2 = createAbsoluteFilepath(filepath2);
 
   // TODO: Чтение тоже можно в отдельную функцию
-  const fileData1 = readFileSync(absPathOfFile1, 'utf-8', (err, data) => {
+  const fileData1 = readFileSync(absolutePath1, 'utf-8', (err, data) => {
     if (err) throw err;
     return JSON.parse(data);
   });
 
-  const fileData2 = readFileSync(absPathOfFile2, 'utf-8', (err, data) => {
+  const fileData2 = readFileSync(absolutePath2, 'utf-8', (err, data) => {
     if (err) throw err;
     return JSON.parse(data);
   });
