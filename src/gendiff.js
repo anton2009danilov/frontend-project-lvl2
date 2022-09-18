@@ -6,6 +6,7 @@ import parse from './parsers.js';
 import format from './formatters/index.js';
 import buildDifferencesTree from './buildTree.js';
 
+// TODO: Тут можно на тернарный оператор заменить
 const createAbsoluteFilepath = (filepath) => {
   if (path.isAbsolute(filepath)) {
     return filepath;
@@ -15,10 +16,12 @@ const createAbsoluteFilepath = (filepath) => {
 };
 
 const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
+  // TODO: Можно просто absolutePath1
   const absPathOfFile1 = createAbsoluteFilepath(filepath1);
 
   const absPathOfFile2 = createAbsoluteFilepath(filepath2);
 
+  // TODO: Чтение тоже можно в отдельную функцию
   const fileData1 = readFileSync(absPathOfFile1, 'utf-8', (err, data) => {
     if (err) throw err;
     return JSON.parse(data);

@@ -77,6 +77,16 @@ const calcResultNode = (node1, node2, currentName = null) => {
 const buildDifferencesTree = (data1, data2) => {
   const namesList1 = Object.entries(data1).map((el) => el[1].name);
   const namesList2 = Object.entries(data2).map((el) => el[1].name);
+
+  // TODO: Тут мы можем проще ключи получить.
+  // const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2})));
+  // тогда мы получи чистый массив нужных нам ключей. Совсем без таких преобразований:
+  // const isTree = (data) => { ... }
+  // const buildTree = (data) => { ... }
+  // А также тут:
+  // const itemOfTree1 = _.first(_.filter(data1, { name: currentName }));
+  // const itemOfTree2 = _.first(_.filter(data2, { name: currentName }));
+  // мы сможем просто по ключу получить два значения и по ним создать уже диф
   const allNamesList = _.sortBy(_.uniq(namesList1.concat(namesList2)));
 
   const resultTree = allNamesList.reduce((root, currentName) => {
