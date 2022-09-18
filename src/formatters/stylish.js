@@ -16,14 +16,15 @@ const stringify = (data, filler = ' ', fillersCount = 1) => {
 
       const result = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
         const formattedValue = iter(value, depth + 1);
+        const previousLine = logOfDiffs ? `${logOfDiffs}\n` : '';
 
-        return `${logOfDiffs}\n${fillerStr}${key}: ${formattedValue}`;
+        return `${previousLine}${fillerStr}${key}: ${formattedValue}`;
       }, '');
 
       // TODO: Тут все еще добавляем кусок относящий к следующей строке.
       // Круто будет сделать, чтобы мы добавляли отступы только для текущей строки,
       // а следующая сама бы собой занималась
-      return `{${result}\n${closingBrace}`;
+      return `{\n${result}\n${closingBrace}`;
     }
 
     return `${currentData}`;
