@@ -21,9 +21,6 @@ const stringify = (data, filler = ' ', fillersCount = 1) => {
         return `${previousLine}${fillerStr}${key}: ${formattedValue}`;
       }, '');
 
-      // TODO: Тут все еще добавляем кусок относящий к следующей строке.
-      // Круто будет сделать, чтобы мы добавляли отступы только для текущей строки,
-      // а следующая сама бы собой занималась
       return `{\n${result}\n${closingBrace}`;
     }
 
