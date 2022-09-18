@@ -7,12 +7,9 @@ export default (data, formatter) => {
       return plain(data);
     case 'json':
       return JSON.stringify(data);
-    // TODO: Так значение по умолчанию неверно выставлять.
-    // Тут должен быть вывод ошибки, т.к. может прилететь любой формат
-    //  и на уровне парсера не сказать, что парсер не умеет
-    // с таким форматом работать. Формат по умолчанию уже есть:
-    // const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
-    default:
+    case 'stylish':
       return stylish(data);
+    default:
+      throw new Error(`Unexpected value of formatter param: ${formatter}`);
   }
 };
