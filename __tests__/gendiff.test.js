@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
 import { test } from '@jest/globals';
-import genDiff from '../src/gendiff.js';
+import gendiff from '../src/gendiff.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,19 +30,19 @@ const testCases = [
   {
     fileName1: 'file1.json',
     fileName2: 'file2.json',
-    formatter: null,
+    formatter: undefined,
     expected: stylishResult,
   },
   {
     fileName1: 'file1.yaml',
     fileName2: 'file2.yaml',
-    formatter: null,
+    formatter: undefined,
     expected: stylishResult,
   },
   {
     fileName1: 'file1.json',
     fileName2: 'file2.yaml',
-    formatter: null,
+    formatter: undefined,
     expected: stylishResult,
   },
   {
@@ -64,5 +64,5 @@ test.each(testCases)('gendiff $file1 $file2', ({
 }) => {
   const fixture1 = getFixturePath(fileName1);
   const fixture2 = getFixturePath(fileName2);
-  expect(genDiff(fixture1, fixture2, formatter)).toBe(expected);
+  expect(gendiff(fixture1, fixture2, formatter)).toBe(expected);
 });
