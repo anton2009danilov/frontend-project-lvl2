@@ -6,14 +6,10 @@ import parse from './parsers.js';
 import format from './formatters/index.js';
 import buildDifferencesTree from './buildTree.js';
 
-// TODO: Тут можно на тернарный оператор заменить
-const createAbsoluteFilepath = (filepath) => {
-  if (path.isAbsolute(filepath)) {
-    return filepath;
-  }
-
-  return path.resolve(process.cwd(), filepath);
-};
+const createAbsoluteFilepath = (filepath) => (path.isAbsolute(filepath)
+  ? filepath
+  : path.resolve(process.cwd(), filepath)
+);
 
 const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
   // TODO: Можно просто absolutePath1
