@@ -59,7 +59,7 @@ const testCases = [
   },
 ];
 
-test.each(testCases)('gendiff $file1 $file2', ({
+test.each(testCases)('gendiff $fileName1 $fileName2', ({
   fileName1, fileName2, formatter, expected,
 }) => {
   const fixture1 = getFixturePath(fileName1);
