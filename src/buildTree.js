@@ -47,23 +47,22 @@ const updateNode = (item1, item2, currentName = null) => {
   };
 };
 
+const calcMovedItem = (item, type, currentName) => {
+  if (_.isObject(item)) {
+    const children = formatItemChildren(item);
+    return { name: currentName, children, type };
+  }
+
+  return { name: currentName, value: item, type };
+};
+
 const calcResultNode = (item1, item2, currentName = null) => {
   if (item1 === undefined) {
-    if (_.isObject(item2)) {
-      const children = formatItemChildren(item2);
-      return { name: currentName, children, type: 'added' };
-    }
-
-    return { name: currentName, value: item2, type: 'added' };
+    return calcMovedItem(item2, 'added', currentName);
   }
 
   if (item2 === undefined) {
-    if (_.isObject(item1)) {
-      const children = formatItemChildren(item1);
-      return { name: currentName, children, type: 'removed' };
-    }
-
-    return { name: currentName, value: item1, type: 'removed' };
+    return calcMovedItem(item1, 'removed', currentName);
   }
 
   if (_.isEqual(item1, item2)) {
