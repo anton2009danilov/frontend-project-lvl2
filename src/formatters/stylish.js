@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
-const formatClosingBrace = (fillerStr, depth) => {
+const formatClosingBrace = (filler, depth) => {
   const closingfillerStr = (depth === 1)
     ? ''
-    : fillerStr.slice(2);
+    : filler.slice(2);
 
   return `\n${closingfillerStr}}`;
 };
@@ -17,9 +17,9 @@ const stringify = (data, filler = ' ', fillersCount = 1) => {
 
       const stringifiedObject = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
         const formattedValue = iter(value, depth + 1);
-        const previousLine = logOfDiffs ? `${logOfDiffs}\n` : '';
+        const previousLine = logOfDiffs ? `${logOfDiffs}\n${fillerStr}` : `${fillerStr}`;
 
-        return `${previousLine}${fillerStr}${key}: ${formattedValue}`;
+        return `${previousLine}${key}: ${formattedValue}`;
       }, '');
 
       return `${openingBrace}${stringifiedObject}${closingBrace}`;
