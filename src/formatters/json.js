@@ -19,11 +19,9 @@ const format = (data) => {
 
   return data.map((el) => {
     if (_.isObject(el)) {
-      if (el.before) {
-        return { ...omitType(el), before: format(el.before), after: format(el.after) };
-      }
-
-      return { ...omitType(el), children: format(el.children) };
+      return el.before
+        ? { ...omitType(el), before: format(el.before), after: format(el.after) }
+        : { ...omitType(el), children: format(el.children) };
     }
 
     return el;
