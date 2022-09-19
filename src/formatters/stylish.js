@@ -1,27 +1,28 @@
 import _ from 'lodash';
 
-const formatClosingBrace = (filler, fillersCount, depth) => {
+const formatClosingBrace = (fillerStr, depth) => {
   const closingfillerStr = (depth === 1)
     ? ''
-    : filler.repeat((fillersCount * depth) + (2 * depth) - 4);
+    : fillerStr.slice(2);
 
-  return `${closingfillerStr}}`;
+  return `\n${closingfillerStr}}`;
 };
 
 const stringify = (data, filler = ' ', fillersCount = 1) => {
   const iter = (currentData, depth) => {
     if (_.isObject(currentData)) {
       const fillerStr = filler.repeat((fillersCount * depth) + (2 * depth) - 2);
-      const closingBrace = formatClosingBrace(filler, fillersCount, depth);
+      const openingBrace = '{\n';
+      const closingBrace = formatClosingBrace(fillerStr, depth);
 
-      const result = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
+      const stringifiedObject = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
         const formattedValue = iter(value, depth + 1);
         const previousLine = logOfDiffs ? `${logOfDiffs}\n` : '';
 
         return `${previousLine}${fillerStr}${key}: ${formattedValue}`;
       }, '');
 
-      return `{\n${result}\n${closingBrace}`;
+      return `${openingBrace}${stringifiedObject}${closingBrace}`;
     }
 
     return `${currentData}`;
