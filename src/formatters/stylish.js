@@ -3,7 +3,7 @@ import _ from 'lodash';
 const formatClosingBrace = (filler, fillersCount, depth) => {
   const closingfillerStr = (depth === 1)
     ? ''
-    : filler.repeat(depth * (fillersCount + 2) - 4);
+    : filler.repeat((fillersCount * depth) + (2 * depth) - 4);
 
   return `${closingfillerStr}}`;
 };
@@ -11,7 +11,7 @@ const formatClosingBrace = (filler, fillersCount, depth) => {
 const stringify = (data, filler = ' ', fillersCount = 1) => {
   const iter = (currentData, depth) => {
     if (_.isObject(currentData)) {
-      const fillerStr = filler.repeat(fillersCount * depth + 2 * (depth - 1));
+      const fillerStr = filler.repeat((fillersCount * depth) + (2 * depth) - 2);
       const closingBrace = formatClosingBrace(filler, fillersCount, depth);
 
       const result = Object.entries(currentData).reduce((logOfDiffs, [key, value]) => {
