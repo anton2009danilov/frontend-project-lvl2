@@ -45,8 +45,6 @@ const stringify = (data, log = '', parentKey = '') => data.reduce((logOfDiffs, i
       return `${logOfDiffs}Property '${key}' was ${type}\n`;
     case 'updated':
       return `${logOfDiffs}Property '${key}' was ${type}. From ${before} to ${after}\n`;
-    // TODO: Так нехорошо делать, мы должны управлять состоянием,
-    // нужно в построении дерева для таких случаев создать соответствующий тип
     case 'unchanged':
       return (isTree(item)) ? stringify(children, logOfDiffs, key) : logOfDiffs;
     default:
