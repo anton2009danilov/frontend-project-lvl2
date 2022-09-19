@@ -1,106 +1,93 @@
 import _ from 'lodash';
 
-const isTree = (data) => {
-  if (!data) {
-    return false;
-  }
-  return data.children || false;
-};
-
-const buildTree = (data) => {
-  if (_.isNull(data)) {
-    return data;
-  }
-
-  const props = Object.entries(data);
-
-  const tree = props.reduce((root, [itemName, itemValue]) => {
-    if (_.isObject(itemValue)) {
-      return [...root, {
-        name: itemName,
-        children: buildTree(itemValue),
-      }];
+const formatItemChildren = (item) => {
+  const children = Object.entries(item).map(([name, value]) => {
+    if (_.isObject(value)) {
+      return ({ name, children: formatItemChildren(value) });
     }
 
-    return [...root, {
-      name: itemName,
-      value: itemValue,
-    }];
-  }, []);
+    return ({ name, value });
+  });
 
-  return tree;
+  return children;
 };
 
-const updateNode = (node1, node2, currentName = null) => {
-  if (isTree(node1)) {
+const formatItem = (item, name) => {
+  if (_.isObject(item)) {
+    return { name, children: item };
+  }
+
+  return { name, value: item };
+};
+
+const updateNode = (item1, item2, currentName = null) => {
+  if (_.isObject(item1)) {
     return {
       name: currentName,
-      before: node1.children,
-      after: node2.value,
+      before: formatItemChildren(item1),
+      after: item2,
       type: 'updated',
     };
   }
 
-  if (isTree(node2)) {
+  if (_.isObject(item2)) {
     return {
       name: currentName,
-      before: node1.value,
-      after: node2.children,
+      before: item1,
+      after: formatItemChildren(item2),
       type: 'updated',
     };
   }
 
   return {
     name: currentName,
-    before: node1.value,
-    after: node2.value,
+    before: item1,
+    after: item2,
     type: 'updated',
   };
 };
 
-const calcResultNode = (node1, node2, currentName = null) => {
-  if (!node1) {
-    return { ...node2, type: 'added' };
+const calcResultNode = (item1, item2, currentName = null) => {
+  if (item1 === undefined) {
+    if (_.isObject(item2)) {
+      const children = formatItemChildren(item2);
+      return { name: currentName, children, type: 'added' };
+    }
+
+    return { name: currentName, value: item2, type: 'added' };
   }
 
-  if (!node2) {
-    return { ...node1, type: 'removed' };
+  if (item2 === undefined) {
+    if (_.isObject(item1)) {
+      const children = formatItemChildren(item1);
+      return { name: currentName, children, type: 'removed' };
+    }
+
+    return { name: currentName, value: item1, type: 'removed' };
   }
 
-  if (_.isEqual(node1, node2)) {
-    return node1;
+  if (_.isEqual(item1, item2)) {
+    return formatItem(item1, currentName);
   }
 
-  return updateNode(node1, node2, currentName);
+  return updateNode(item1, item2, currentName);
 };
 
-const buildDifferencesTree = (data1, data2) => {
-  const namesList1 = Object.entries(data1).map((el) => el[1].name);
-  const namesList2 = Object.entries(data2).map((el) => el[1].name);
+const buildDifferencesTree = (file1, file2) => {
+  const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2 })));
 
-  // TODO: Тут мы можем проще ключи получить.
-  // const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2})));
-  // тогда мы получи чистый массив нужных нам ключей. Совсем без таких преобразований:
-  // const isTree = (data) => { ... }
-  // const buildTree = (data) => { ... }
-  // А также тут:
-  // const itemOfTree1 = _.first(_.filter(data1, { name: currentName }));
-  // const itemOfTree2 = _.first(_.filter(data2, { name: currentName }));
-  // мы сможем просто по ключу получить два значения и по ним создать уже диф
-  const allNamesList = _.sortBy(_.uniq(namesList1.concat(namesList2)));
+  const resultTree = sortedKeys.reduce((root, currentName) => {
+    const itemOfFile1 = file1[currentName];
+    const itemOfFile2 = file2[currentName];
 
-  const resultTree = allNamesList.reduce((root, currentName) => {
-    const itemOfTree1 = _.first(_.filter(data1, { name: currentName }));
-    const itemOfTree2 = _.first(_.filter(data2, { name: currentName }));
-
-    if (isTree(itemOfTree1) && isTree(itemOfTree2)) {
+    if (_.isObject(itemOfFile1) && _.isObject(itemOfFile2)) {
       return [...root, {
         name: currentName,
-        children: buildDifferencesTree(itemOfTree1.children, itemOfTree2.children),
+        children: buildDifferencesTree(file1[currentName], file2[currentName]),
       }];
     }
 
-    const resultNode = calcResultNode(itemOfTree1, itemOfTree2, currentName);
+    const resultNode = calcResultNode(itemOfFile1, itemOfFile2, currentName);
 
     return [...root, resultNode];
   }, []);
@@ -108,9 +95,4 @@ const buildDifferencesTree = (data1, data2) => {
   return resultTree;
 };
 
-export default (file1, file2) => {
-  const tree1 = buildTree(file1);
-  const tree2 = buildTree(file2);
-
-  return buildDifferencesTree(tree1, tree2);
-};
+export default (file1, file2) => buildDifferencesTree(file1, file2);
