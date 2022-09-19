@@ -3,10 +3,10 @@ import _ from 'lodash';
 const formatItemChildren = (item) => {
   const children = Object.entries(item).map(([name, value]) => {
     if (_.isObject(value)) {
-      return ({ name, children: formatItemChildren(value) });
+      return ({ name, children: formatItemChildren(value), type: 'unchanged' });
     }
 
-    return ({ name, value });
+    return ({ name, value, type: 'unchanged' });
   });
 
   return children;
@@ -14,10 +14,10 @@ const formatItemChildren = (item) => {
 
 const formatItem = (item, name) => {
   if (_.isObject(item)) {
-    return { name, children: item };
+    return { name, children: item, type: 'unchanged' };
   }
 
-  return { name, value: item };
+  return { name, value: item, type: 'unchanged' };
 };
 
 const updateNode = (item1, item2, currentName = null) => {
@@ -67,7 +67,7 @@ const calcResultNode = (item1, item2, currentName = null) => {
   }
 
   if (_.isEqual(item1, item2)) {
-    return formatItem(item1, currentName);
+    return { ...formatItem(item1, currentName), type: 'unchanged' };
   }
 
   return updateNode(item1, item2, currentName);
@@ -84,6 +84,7 @@ const buildDifferencesTree = (file1, file2) => {
       return [...root, {
         name: currentName,
         children: buildDifferencesTree(file1[currentName], file2[currentName]),
+        type: 'unchanged',
       }];
     }
 
@@ -95,4 +96,4 @@ const buildDifferencesTree = (file1, file2) => {
   return resultTree;
 };
 
-export default (file1, file2) => buildDifferencesTree(file1, file2);
+export default buildDifferencesTree;
