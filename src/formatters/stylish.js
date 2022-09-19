@@ -93,6 +93,7 @@ const format = (data) => {
       case 'removed':
         return updateTreeWithMovedItem(formattedTree, item, format);
       case 'unchanged':
+      case 'children updated':
         return children
           ? _.set({ ...formattedTree }, formatUnchangedName(name), format(children))
           : _.set({ ...formattedTree }, formatUnchangedName(name), value);

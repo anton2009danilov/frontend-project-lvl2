@@ -72,22 +72,30 @@ const calcResultNode = (item1, item2, currentName = null) => {
   return updateNode(item1, item2, currentName);
 };
 
+const defineChangeType = (item1, item2) => {
+  if (_.isEqual(item1, item2)) {
+    return 'unchanged';
+  }
+
+  return 'children updated';
+};
+
 const buildDifferencesTree = (file1, file2) => {
   const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2 })));
 
   const resultTree = sortedKeys.reduce((root, currentName) => {
-    const itemOfFile1 = file1[currentName];
-    const itemOfFile2 = file2[currentName];
+    const item1 = file1[currentName];
+    const item2 = file2[currentName];
 
-    if (_.isObject(itemOfFile1) && _.isObject(itemOfFile2)) {
+    if (_.isObject(item1) && _.isObject(item2)) {
       return [...root, {
         name: currentName,
-        children: buildDifferencesTree(file1[currentName], file2[currentName]),
-        type: 'unchanged',
+        children: buildDifferencesTree(item1, item2),
+        type: defineChangeType(item1, item2),
       }];
     }
 
-    const resultNode = calcResultNode(itemOfFile1, itemOfFile2, currentName);
+    const resultNode = calcResultNode(item1, item2, currentName);
 
     return [...root, resultNode];
   }, []);
