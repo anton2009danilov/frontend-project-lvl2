@@ -1,33 +1,33 @@
 import _ from 'lodash';
 
+const omitType = (obj) => {
+  if (obj.type === 'unchanged') {
+    return _.omit(obj, 'type');
+  }
+
+  if (obj.type === 'children updated') {
+    return _.omit(obj, 'type');
+  }
+
+  return obj;
+};
+
 const format = (data) => {
   if (!_.isArray(data)) {
     return data;
   }
 
-  return data.reduce((resultTree, item) => {
-    if (item.type === 'unchanged') {
-      return format([...resultTree, _.omit(item, 'type')]);
+  return data.map((el) => {
+    if (_.isObject(el)) {
+      if (el.before) {
+        return { ...omitType(el), before: format(el.before), after: format(el.after) };
+      }
+
+      return { ...omitType(el), children: format(el.children) };
     }
 
-    if (item.children) {
-      return [...resultTree, { ...item, children: format(item.children) }];
-    }
-
-    if (item.type === 'added') {
-      return [...resultTree, { ...item, value: format(item.value) }];
-    }
-
-    if (item.type === 'removed') {
-      return [...resultTree, { ...item, value: format(item.value) }];
-    }
-
-    if (item.type === 'updated') {
-      return [...resultTree, { ...item, before: format(item.before), after: format(item.after) }];
-    }
-
-    return [...resultTree, item];
-  }, []);
+    return el;
+  });
 };
 
 export default (data) => JSON.stringify(format(data));
