@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
 const formatItemChildren = (item) => {
+  // TODO: Предлагаю это вынести в отдельную функцию.
+  // Повторяется тут в трех местах, можем убрать 3 функции из файла
   const children = Object.entries(item).map(([name, value]) => {
     if (_.isObject(value)) {
       return ({ name, children: formatItemChildren(value), type: 'unchanged' });
@@ -20,6 +22,8 @@ const formatItem = (item, name) => {
   return { name, value: item, type: 'unchanged' };
 };
 
+// TODO: Так же сейчас условия для построения узлов дерева разбиты по разным функция,
+// хорошо бы их объединить в одно место (в основную функцию скопом или отдельно выделить)
 const updateNode = (item1, item2, currentName = null) => {
   if (_.isObject(item1)) {
     return {
@@ -56,6 +60,8 @@ const calcMovedItem = (item, type, currentName) => {
   return { name: currentName, value: item, type };
 };
 
+// TODO: Так же сейчас условия для построения узлов дерева разбиты по разным функция,
+// хорошо бы их объединить в одно место (в основную функцию скопом или отдельно выделить)
 const calcResultNode = (item1, item2, currentName = null) => {
   if (item1 === undefined) {
     return calcMovedItem(item2, 'added', currentName);
@@ -87,6 +93,8 @@ const buildDifferencesTree = (file1, file2) => {
     const item1 = file1[currentName];
     const item2 = file2[currentName];
 
+    // TODO: Так же сейчас условия для построения узлов дерева разбиты по разным функция,
+    // хорошо бы их объединить в одно место (в основную функцию скопом или отдельно выделить)
     if (_.isObject(item1) && _.isObject(item2)) {
       return [...root, {
         name: currentName,

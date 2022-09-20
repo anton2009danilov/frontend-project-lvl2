@@ -37,6 +37,7 @@ const getSign = (type) => {
       return '+';
     case 'removed':
       return '-';
+    // TODO: Тут тоже дефолт = ошибке
     default:
       return null;
   }
