@@ -1,26 +1,14 @@
 import _ from 'lodash';
 
-const formatItemChildren = (item) => {
-  // TODO: Предлагаю это вынести в отдельную функцию.
-  // Повторяется тут в трех местах, можем убрать 3 функции из файла
-  const children = Object.entries(item).map(([name, value]) => {
-    if (_.isObject(value)) {
-      return ({ name, children: formatItemChildren(value), type: 'unchanged' });
-    }
+const formatItemChildren = (item, type = 'unchanged', currentName = '') => Object.entries(item).map(([key, value]) => {
+  const name = currentName || key;
 
-    return ({ name, value, type: 'unchanged' });
-  });
-
-  return children;
-};
-
-const formatItem = (item, name) => {
-  if (_.isObject(item)) {
-    return { name, children: item, type: 'unchanged' };
+  if (_.isObject(value)) {
+    return ({ name, children: formatItemChildren(value), type });
   }
 
-  return { name, value: item, type: 'unchanged' };
-};
+  return ({ name, value, type });
+});
 
 // TODO: Так же сейчас условия для построения узлов дерева разбиты по разным функция,
 // хорошо бы их объединить в одно место (в основную функцию скопом или отдельно выделить)
@@ -53,8 +41,7 @@ const updateNode = (item1, item2, currentName = null) => {
 
 const calcMovedItem = (item, type, currentName) => {
   if (_.isObject(item)) {
-    const children = formatItemChildren(item);
-    return { name: currentName, children, type };
+    return { name: currentName, children: formatItemChildren(item), type };
   }
 
   return { name: currentName, value: item, type };
@@ -72,7 +59,7 @@ const calcResultNode = (item1, item2, currentName = null) => {
   }
 
   if (_.isEqual(item1, item2)) {
-    return { ...formatItem(item1, currentName), type: 'unchanged' };
+    return { name: currentName, value: item1, type: 'unchanged' };
   }
 
   return updateNode(item1, item2, currentName);
