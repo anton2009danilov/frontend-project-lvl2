@@ -37,9 +37,12 @@ const getSign = (type) => {
       return '+';
     case 'removed':
       return '-';
+    case 'unchanged':
+    case 'children updated':
+      return null;
     // TODO: Тут тоже дефолт = ошибке
     default:
-      return null;
+      throw new Error(`Unexpected value of property 'type': ${type}`);
   }
 };
 
