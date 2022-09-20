@@ -16,7 +16,7 @@ const readFile = (absolutePath) => readFileSync(absolutePath, 'utf-8', (err, dat
   return JSON.parse(data);
 });
 
-const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
+const gendiff = (filepath1, filepath2, formatter = 'stylish') => {
   const fileData1 = readFile(createAbsoluteFilepath(filepath1));
   const fileData2 = readFile(createAbsoluteFilepath(filepath2));
 
@@ -26,4 +26,4 @@ const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
   return format(buildDifferencesTree(file1, file2), formatter);
 };
 
-export default genDiff;
+export default gendiff;

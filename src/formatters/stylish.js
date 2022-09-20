@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+const isTree = (data) => (!!data.children);
+
 const formatClosingBrace = (filler, depth) => {
   const closingfillerStr = (depth === 1)
     ? ''
@@ -39,8 +41,7 @@ const getSign = (type) => {
       return '-';
     case 'unchanged':
     case 'children updated':
-      return null;
-    // TODO: Тут тоже дефолт = ошибке
+      return undefined;
     default:
       throw new Error(`Unexpected value of property 'type': ${type}`);
   }
@@ -63,12 +64,12 @@ const formatUpdatedName = (name, replacer = ' ') => {
 
 const updateTreeWithUpdatedItem = (tree, item, formatFunction) => {
   const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
-  const itemWithBeforeValue = _.set(
+  const TreeWithBeforeValue = _.set(
     { ...tree },
     [beforeValueName],
     formatFunction(item.before),
   );
-  return _.set(itemWithBeforeValue, afterValueName, formatFunction(item.after));
+  return _.set(TreeWithBeforeValue, afterValueName, formatFunction(item.after));
 };
 
 const updateTreeWithMovedItem = (tree, item, formatFunction) => {
@@ -96,9 +97,10 @@ const format = (data) => {
         return updateTreeWithMovedItem(formattedTree, item, format);
       case 'removed':
         return updateTreeWithMovedItem(formattedTree, item, format);
-      case 'unchanged':
       case 'children updated':
-        return children
+        return _.set({ ...formattedTree }, formatUnchangedName(name), format(children));
+      case 'unchanged':
+        return isTree(item)
           ? _.set({ ...formattedTree }, formatUnchangedName(name), format(children))
           : _.set({ ...formattedTree }, formatUnchangedName(name), value);
       default:

@@ -1,18 +1,14 @@
 import _ from 'lodash';
 
-const isTree = (data) => _.isObject(data);
-
 const formatItemChildren = (item, type = 'unchanged') => Object.entries(item).map(([name, value]) => {
-  if (isTree(value)) {
+  if (_.isObject(value)) {
     return ({ name, children: formatItemChildren(value), type });
   }
 
   return ({ name, value, type });
 });
 
-// TODO: Так же сейчас условия для построения узлов дерева разбиты по разным функция,
-// хорошо бы их объединить в одно место (в основную функцию скопом или отдельно выделить)
-const updateNode = (item1, item2, buildType, currentName = undefined) => {
+const updateItem = (item1, item2, buildType, currentName = undefined) => {
   switch (buildType) {
     case 'tree vs value':
       return {
@@ -64,27 +60,27 @@ const compareWithEmptiness = (item, buildType, name) => {
 };
 
 const defineBuildType = (item1, item2) => {
-  if (isTree(item1) && isTree(item2)) {
+  if (_.isObject(item1) && _.isObject(item2)) {
     return 'tree vs tree';
   }
 
   if (item1 === undefined) {
-    return isTree(item2) ? 'emptiness vs tree' : 'emptiness vs value';
+    return _.isObject(item2) ? 'emptiness vs tree' : 'emptiness vs value';
   }
 
   if (item2 === undefined) {
-    return isTree(item1) ? 'tree vs emptiness' : 'value vs emptiness';
+    return _.isObject(item1) ? 'tree vs emptiness' : 'value vs emptiness';
   }
 
   if (_.isEqual(item1, item2)) {
     return 'value equal value';
   }
 
-  if (isTree(item1)) {
+  if (_.isObject(item1)) {
     return 'tree vs value';
   }
 
-  if (isTree(item2)) {
+  if (_.isObject(item2)) {
     return 'value vs tree';
   }
 
@@ -118,7 +114,7 @@ const buildDifferencesTree = (file1, file2) => {
       case 'tree vs value':
       case 'value vs tree':
       case 'value vs value':
-        return [...root, updateNode(item1, item2, buildType, currentName)];
+        return [...root, updateItem(item1, item2, buildType, currentName)];
       default:
         throw new Error(`Unexpected value of buildType variable: ${buildType}`);
     }

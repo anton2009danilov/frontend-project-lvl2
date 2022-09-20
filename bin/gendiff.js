@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command, Option } from 'commander/esm.mjs';
-import genDiff from '../src/gendiff.js';
+import gendiff from '../src/gendiff.js';
 
 const program = new Command();
 const options = program.opts();
@@ -14,6 +14,6 @@ program
   .description('Compares two configuration files and shows a difference.')
   .helpOption('-h, --help', 'output usage information')
   .addOption(formatOption)
-  .action((path1, path2) => console.log(genDiff(path1, path2, options.format)));
+  .action((path1, path2) => console.log(gendiff(path1, path2, options.format)));
 
 program.parse(process.argv);
