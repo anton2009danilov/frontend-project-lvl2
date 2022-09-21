@@ -16,6 +16,10 @@ const defineTreeChangeType = (item1, item2) => {
   return 'children updated';
 };
 
+const formatMovedItem = (item, name, type) => (_.isObject(item)
+  ? { name, children: formatItemChildren(item), type }
+  : { name, value: item, type });
+
 const buildDifferencesTree = (file1, file2) => {
   const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2 })));
 
@@ -36,15 +40,11 @@ const buildDifferencesTree = (file1, file2) => {
     }
 
     if (item1 === undefined) {
-      return _.isObject(item2)
-        ? [...root, { name: currentName, children: formatItemChildren(item2), type: 'added' }]
-        : [...root, { name: currentName, value: item2, type: 'added' }];
+      return [...root, formatMovedItem(item2, currentName, 'added')];
     }
 
     if (item2 === undefined) {
-      return _.isObject(item1)
-        ? [...root, { name: currentName, children: formatItemChildren(item1), type: 'removed' }]
-        : [...root, { name: currentName, value: item1, type: 'removed' }];
+      return [...root, formatMovedItem(item1, currentName, 'removed')];
     }
 
     if (_.isObject(item1)) {
