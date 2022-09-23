@@ -8,11 +8,6 @@ const formatItemChildren = (item, type = 'unchanged') => Object.entries(item).ma
   return ({ name, value, type });
 });
 
-const formatComplexItem = (item) => {
-  const [name, value] = Object.entries(item).at(0);
-  return [{ name, value, type: 'unchanged' }];
-};
-
 const formatMovedItem = (item, name, type) => (_.isObject(item)
   ? { name, children: formatItemChildren(item), type }
   : { name, value: item, type });
@@ -51,8 +46,8 @@ const buildDifferencesTree = (file1, file2) => {
     const type = 'updated';
     return [...root, {
       name: key,
-      before: _.isObject(item1) ? formatComplexItem(item1) : item1,
-      after: _.isObject(item2) ? formatComplexItem(item2) : item2,
+      before: _.isObject(item1) ? formatItemChildren(item1) : item1,
+      after: _.isObject(item2) ? formatItemChildren(item2) : item2,
       type,
     }];
   }, []);
