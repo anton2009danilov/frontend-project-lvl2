@@ -8,12 +8,9 @@ const formatItemChildren = (item, type = 'unchanged') => Object.entries(item).ma
   return ({ name, value, type });
 });
 
-const defineTreeChangeType = (item1, item2) => {
-  if (_.isEqual(item1, item2)) {
-    return 'unchanged';
-  }
-
-  return 'children updated';
+const formatComplexItem = (item) => {
+  const [name, value] = Object.entries(item).at(0);
+  return [{ name, value, type: 'unchanged' }];
 };
 
 const formatMovedItem = (item, name, type) => (_.isObject(item)
@@ -23,53 +20,40 @@ const formatMovedItem = (item, name, type) => (_.isObject(item)
 const buildDifferencesTree = (file1, file2) => {
   const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2 })));
 
-  const resultTree = sortedKeys.reduce((root, currentName) => {
-    const item1 = file1[currentName];
-    const item2 = file2[currentName];
+  const resultTree = sortedKeys.reduce((root, key) => {
+    const item1 = file1[key];
+    const item2 = file2[key];
 
     if (_.isEqual(item1, item2)) {
-      return [...root, { name: currentName, value: item1, type: 'unchanged' }];
+      const type = 'unchanged';
+      return [...root, { name: key, value: item1, type }];
     }
 
     if (_.isObject(item1) && _.isObject(item2)) {
+      const type = 'children updated';
       return [...root, {
-        name: currentName,
+        name: key,
         children: buildDifferencesTree(item1, item2),
-        type: defineTreeChangeType(item1, item2),
+        type,
       }];
     }
 
-    if (item1 === undefined) {
-      return [...root, formatMovedItem(item2, currentName, 'added')];
+    if (item1 === undefined && item2 !== undefined) {
+      const type = 'added';
+      return [...root, formatMovedItem(item2, key, type)];
     }
 
-    if (item2 === undefined) {
-      return [...root, formatMovedItem(item1, currentName, 'removed')];
+    if (item1 !== undefined && item2 === undefined) {
+      const type = 'removed';
+      return [...root, formatMovedItem(item1, key, type)];
     }
 
-    if (_.isObject(item1)) {
-      return [...root, {
-        name: currentName,
-        before: formatItemChildren(item1),
-        after: item2,
-        type: 'updated',
-      }];
-    }
-
-    if (_.isObject(item2)) {
-      return [...root, {
-        name: currentName,
-        before: item1,
-        after: formatItemChildren(item2),
-        type: 'updated',
-      }];
-    }
-
+    const type = 'updated';
     return [...root, {
-      name: currentName,
-      before: item1,
-      after: item2,
-      type: 'updated',
+      name: key,
+      before: _.isObject(item1) ? formatComplexItem(item1) : item1,
+      after: _.isObject(item2) ? formatComplexItem(item2) : item2,
+      type,
     }];
   }, []);
 
