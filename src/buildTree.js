@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+const formatItem = (item, type = 'unchanged') => Object.entries(item).map(([name, value]) => ({ name, value, type }));
+
 const formatItemChildren = (item, type = 'unchanged') => Object.entries(item).map(([name, value]) => {
   if (_.isObject(value)) {
     return ({ name, children: formatItemChildren(value), type });
@@ -46,8 +48,8 @@ const buildDifferencesTree = (file1, file2) => {
     const type = 'updated';
     return [...root, {
       name: key,
-      before: _.isObject(item1) ? formatItemChildren(item1) : item1,
-      after: _.isObject(item2) ? formatItemChildren(item2) : item2,
+      before: _.isObject(item1) ? formatItem(item1) : item1,
+      after: _.isObject(item2) ? formatItem(item2) : item2,
       type,
     }];
   }, []);
