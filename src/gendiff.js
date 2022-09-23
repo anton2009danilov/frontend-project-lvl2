@@ -11,10 +11,7 @@ const createAbsoluteFilepath = (filepath) => (path.isAbsolute(filepath)
   : path.resolve(process.cwd(), filepath)
 );
 
-const readFile = (absolutePath) => readFileSync(absolutePath, 'utf-8', (err, data) => {
-  if (err) throw err;
-  return JSON.parse(data);
-});
+const readFile = (absolutePath) => readFileSync(absolutePath, 'utf-8');
 
 const gendiff = (filepath1, filepath2, formatter = 'stylish') => {
   const fileData1 = readFile(createAbsoluteFilepath(filepath1));

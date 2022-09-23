@@ -11,20 +11,11 @@ const stylishResultPath = getFixturePath('stylish_result.txt');
 const plainResultPath = getFixturePath('plain_result.txt');
 const jsonResultPath = getFixturePath('json_result.txt');
 
-const stylishResult = readFileSync(stylishResultPath, 'utf-8', (err, data) => {
-  if (err) throw err;
-  return JSON.parse(data);
-});
+const stylishResult = readFileSync(stylishResultPath, 'utf-8');
 
-const plainResult = readFileSync(plainResultPath, 'utf-8', (err, data) => {
-  if (err) throw err;
-  return JSON.parse(data);
-});
+const plainResult = readFileSync(plainResultPath, 'utf-8');
 
-const jsonResult = readFileSync(jsonResultPath, 'utf-8', (err, data) => {
-  if (err) throw err;
-  return JSON.parse(data);
-});
+const jsonResult = readFileSync(jsonResultPath, 'utf-8');
 
 const testCases = [
   {
