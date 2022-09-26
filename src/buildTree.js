@@ -1,19 +1,5 @@
 import _ from 'lodash';
 
-const formatItem = (item, type = 'unchanged') => Object.entries(item).map(([name, value]) => ({ name, value, type }));
-
-const formatItemChildren = (item, type = 'unchanged') => Object.entries(item).map(([name, value]) => {
-  if (_.isObject(value)) {
-    return ({ name, children: formatItemChildren(value), type });
-  }
-
-  return ({ name, value, type });
-});
-
-const formatMovedItem = (item, name, type) => (_.isObject(item)
-  ? { name, children: formatItemChildren(item), type }
-  : { name, value: item, type });
-
 const buildDifferencesTree = (file1, file2) => {
   const sortedKeys = _.sortBy(_.uniq(Object.keys({ ...file1, ...file2 })));
 
@@ -23,33 +9,33 @@ const buildDifferencesTree = (file1, file2) => {
 
     if (_.isEqual(item1, item2)) {
       const type = 'unchanged';
-      return [...root, { name: key, value: item1, type }];
+      return [...root, { [key]: item1, type }];
     }
 
     if (_.isObject(item1) && _.isObject(item2)) {
-      const type = 'children updated';
+      const type = 'nested';
       return [...root, {
-        name: key,
-        children: buildDifferencesTree(item1, item2),
+        [key]: (buildDifferencesTree(item1, item2)),
         type,
       }];
     }
 
     if (item1 === undefined && item2 !== undefined) {
       const type = 'added';
-      return [...root, formatMovedItem(item2, key, type)];
+      return [...root, { [key]: item2, type }];
     }
 
     if (item1 !== undefined && item2 === undefined) {
       const type = 'removed';
-      return [...root, formatMovedItem(item1, key, type)];
+      return [...root, { [key]: item1, type }];
     }
 
     const type = 'updated';
     return [...root, {
-      name: key,
-      before: _.isObject(item1) ? formatItem(item1) : item1,
-      after: _.isObject(item2) ? formatItem(item2) : item2,
+      [key]: {
+        before: item1,
+        after: item2,
+      },
       type,
     }];
   }, []);
