@@ -15,7 +15,6 @@ const buildDifferencesTree = (file1, file2) => {
     if (_.isObject(item1) && _.isObject(item2)) {
       const type = 'nested';
       return [...root, { key, children: (buildDifferencesTree(item1, item2)), type }];
-      // return [...root, [{ [key]: (buildDifferencesTree(item1, item2)) }, type]];
     }
 
     if (item1 === undefined && item2 !== undefined) {
