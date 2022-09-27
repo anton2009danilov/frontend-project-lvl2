@@ -1,7 +1,5 @@
 import _ from 'lodash';
 
-const isTree = (data) => (!!data.children);
-
 const formatClosingBrace = (filler, depth) => {
   const closingfillerStr = (depth === 1)
     ? ''
@@ -33,76 +31,46 @@ const stringify = (data, filler = ' ', fillersCount = 1) => {
   return iter(data, 1);
 };
 
-const getSign = (type) => {
-  switch (type) {
-    case 'added':
-      return '+';
-    case 'removed':
-      return '-';
-    case 'unchanged':
-    case 'children updated':
-      return undefined;
-    default:
-      throw new Error(`Unexpected value of property 'type': ${type}`);
-  }
-};
+const formatItemName = (item) => {
+  if (_.isObject(item)) {
+    const formattedItem = Object.entries(item).reduce((formatted, [key, value]) => {
+      if (_.isObject(value)) {
+        return { ...formatted, [`  ${key}`]: formatItemName(value) };
+      }
+      return { ...formatted, [`  ${key}`]: value };
+    }, {});
 
-const formatUnchangedName = (name, sign = null, replacer = ' ') => {
-  if (!sign) {
-    return `${replacer.repeat(2)}${name}`;
+    return formattedItem;
   }
 
-  return `${sign}${replacer}${name}`;
-};
-
-const formatUpdatedName = (name, replacer = ' ') => {
-  const beforeValueName = `-${replacer}${name}`;
-  const afterValueName = `+${replacer}${name}`;
-
-  return [beforeValueName, afterValueName];
-};
-
-const updateTreeWithUpdatedItem = (tree, item, formatFunction) => {
-  const [beforeValueName, afterValueName] = formatUpdatedName(item.name);
-  const TreeWithBeforeValue = _.set(
-    { ...tree },
-    [beforeValueName],
-    formatFunction(item.before),
-  );
-  return _.set(TreeWithBeforeValue, afterValueName, formatFunction(item.after));
-};
-
-const updateTreeWithMovedItem = (tree, item, formatFunction) => {
-  const { value, children, type } = item;
-  const name = formatUnchangedName(item.name, getSign(type));
-  const newValue = (value === undefined) ? formatFunction(children) : value;
-
-  return _.set({ ...tree }, [name], newValue);
+  return item;
 };
 
 const format = (data) => {
-  if (!_.isObject(data)) {
+  if (!_.isArray(data)) {
     return data;
   }
 
   return data.reduce((formattedTree, item) => {
     const {
-      name, value, type, children,
+      key, value, children, type, before, after,
     } = item;
 
     switch (type) {
       case 'updated':
-        return updateTreeWithUpdatedItem(formattedTree, item, format);
+        return {
+          ...formattedTree,
+          [`- ${key}`]: formatItemName(before),
+          [`+ ${key}`]: formatItemName(after),
+        };
       case 'added':
-        return updateTreeWithMovedItem(formattedTree, item, format);
+        return { ...formattedTree, [`+ ${key}`]: formatItemName(value) };
       case 'removed':
-        return updateTreeWithMovedItem(formattedTree, item, format);
-      case 'children updated':
-        return _.set({ ...formattedTree }, formatUnchangedName(name), format(children));
+        return { ...formattedTree, [`- ${key}`]: formatItemName(value) };
+      case 'nested':
+        return { ...formattedTree, [`  ${key}`]: format(children) };
       case 'unchanged':
-        return isTree(item)
-          ? _.set({ ...formattedTree }, formatUnchangedName(name), format(children))
-          : _.set({ ...formattedTree }, formatUnchangedName(name), value);
+        return { ...formattedTree, [`  ${key}`]: value };
       default:
         throw new Error(`Unexpected value of property 'type': ${type}`);
     }

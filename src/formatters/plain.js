@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const isTree = (data) => data.children || false;
-const isComplex = (data) => _.isArray(data) || data === '[complex value]';
+const isComplex = (data) => _.isObject(data) || data === '[complex value]';
 
 const prepareForDisplay = (value) => {
   if (isComplex(value)) {
@@ -32,21 +32,21 @@ const getCompositeKey = (parentKey, name) => {
 };
 
 const stringify = (data, log = '', parentKey = '') => data.reduce((logOfDiffs, item) => {
-  const { name, children, type } = item;
-  const key = getCompositeKey(parentKey, name);
+  const { key, children, type } = item;
+  const name = getCompositeKey(parentKey, key);
   const value = getFormattedValue(item);
   const before = prepareForDisplay(item.before);
   const after = prepareForDisplay(item.after);
 
   switch (type) {
     case 'added':
-      return `${logOfDiffs}Property '${key}' was ${type} with value: ${value}\n`;
+      return `${logOfDiffs}Property '${name}' was ${type} with value: ${value}\n`;
     case 'removed':
-      return `${logOfDiffs}Property '${key}' was ${type}\n`;
+      return `${logOfDiffs}Property '${name}' was ${type}\n`;
     case 'updated':
-      return `${logOfDiffs}Property '${key}' was ${type}. From ${before} to ${after}\n`;
-    case 'children updated':
-      return stringify(children, logOfDiffs, key);
+      return `${logOfDiffs}Property '${name}' was ${type}. From ${before} to ${after}\n`;
+    case 'nested':
+      return stringify(children, logOfDiffs, name);
     case 'unchanged':
       return logOfDiffs;
     default:

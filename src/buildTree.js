@@ -9,34 +9,28 @@ const buildDifferencesTree = (file1, file2) => {
 
     if (_.isEqual(item1, item2)) {
       const type = 'unchanged';
-      return [...root, { [key]: item1, type }];
+      return [...root, { key, value: item1, type }];
     }
 
     if (_.isObject(item1) && _.isObject(item2)) {
       const type = 'nested';
-      return [...root, {
-        [key]: (buildDifferencesTree(item1, item2)),
-        type,
-      }];
+      return [...root, { key, children: (buildDifferencesTree(item1, item2)), type }];
+      // return [...root, [{ [key]: (buildDifferencesTree(item1, item2)) }, type]];
     }
 
     if (item1 === undefined && item2 !== undefined) {
       const type = 'added';
-      return [...root, { [key]: item2, type }];
+      return [...root, { key, value: item2, type }];
     }
 
     if (item1 !== undefined && item2 === undefined) {
       const type = 'removed';
-      return [...root, { [key]: item1, type }];
+      return [...root, { key, value: item1, type }];
     }
 
     const type = 'updated';
     return [...root, {
-      [key]: {
-        before: item1,
-        after: item2,
-      },
-      type,
+      key, before: item1, after: item2, type,
     }];
   }, []);
 
